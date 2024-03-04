@@ -19,7 +19,7 @@ export default class PubSubService {
 
         if (config.useDeveloperScale) {
             window.test = {
-                follower: (name = 'xSuperSandLegend') => {
+                follower: (name = 'ThisIsMakena') => {
                     this.queue.push({type: 'new-follower', data: {displayName: name}});
                     this.processEvents();
                 },

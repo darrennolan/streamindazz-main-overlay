@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeAutoObservable } from 'mobx';
+import { runInAction, makeAutoObservable } from 'mobx';
 
 class TwitchAlertsStore {
     follower = null;
@@ -10,11 +10,15 @@ class TwitchAlertsStore {
 
     // In your FollowerStore
     handleEvent(event, callback) {
-        this.callback = callback;
-
         switch (event.type) {
             case 'new-follower':
                 this.follower = event.data;
+                this.callback = () => {
+                    runInAction(() => {
+                        this.follower = null;
+                        callback();
+                    });
+                };
 
 
                 break;
