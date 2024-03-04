@@ -178,7 +178,3 @@ const TwitchFollowers = observer(() => {
 });
 
 export default TwitchFollowers;
-
-setTimeout(() => {
-    window.test.follower();
-}, 500);
