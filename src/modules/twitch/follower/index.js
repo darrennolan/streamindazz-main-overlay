@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { reaction } from 'mobx';
 import { observer } from 'mobx-react';
 import { twitchAlertsStore, TwitchAlertsContext } from '../alerts-store';
+
+import soundWhoosh from '../../../sounds/whoosh/whoosh.mp3';
 
 const slideInLeft = keyframes`
     0% { transform: translateX(-150%); }
@@ -58,8 +59,8 @@ const StripColor = styled.div`
 const TextContainer = styled.div`
     background: rgba(0, 0, 0, 1);
     text-align: center;
-    top: calc(50% - 2.5%);
-    left: 50%;
+    top: 5%;
+    left: 40%;
     height: 85%;
     transform: translate(-50%, -50%);
     font-size: 40px;
@@ -84,27 +85,72 @@ const TextUsername = styled.span`
 const TwitchFollowers = observer(() => {
     const twitchAlertsContext = useContext(TwitchAlertsContext);
     const [animationEnded, setAnimationEnded] = useState(false);
+    const audioWhoosh = new Audio(soundWhoosh);
+
+    const onAnimationStart = (e) => {
+        if (e.animationName === slideInLeft.name || e.animationName === slideOutRight.name) {
+            audioWhoosh.playbackRate = 2;
+            audioWhoosh.play();
+        }
+    }
+
     const onAnimationEnd = (e) => {
+        if (e.animationName === slideInLeft.name) {
+            // read out follower name + text
+            const utterance = new SpeechSynthesisUtterance(`New Follower! ${twitchAlertsContext.follower.displayName}!`);
+            const voices = speechSynthesis.getVoices();
+
+            // Preferred voice URIs
+            const preferredURIs = [
+                'Google UK English Male',
+                'Microsoft David - English (United States)',
+                'Google US English',
+                'Google UK English Female',
+            ];
+
+            // Find a voice that matches a preferred URI
+            utterance.voice = voices
+                .filter(voice => preferredURIs.includes(voice.voiceURI))
+                .sort((a, b) => {
+                    const indexA = preferredURIs.indexOf(a.voiceURI);
+                    const indexB = preferredURIs.indexOf(b.voiceURI);
+
+                    if (indexA === -1 && indexB === -1) {
+                        return 0;
+                    } else if (indexA === -1) {
+                        return 1;
+                    } else if (indexB === -1) {
+                        return -1;
+                    } else {
+                        return indexA - indexB;
+                    }
+                })[0] || voices[0];
+
+            utterance.volume = 1; // Set volume
+            utterance.rate = 1.0; // Set speed
+            speechSynthesis.speak(utterance);
+        }
+
         if (e.animationName === slideOutRight.name) {
             setAnimationEnded(true);
         }
     }
 
-    useEffect(() => {
-        // Set up a reaction that runs whenever the follower changes
-        const disposer = reaction(
-            () => twitchAlertsContext.follower,
-            (follower) => {
-                if (follower) {
-                    console.log(`New follower: ${follower.displayName}`);
-                    // You can add more code here to handle the new follower
-                }
-            },
-        );
+    // useEffect(() => {
+    //     // Set up a reaction that runs whenever the follower changes
+    //     const disposer = reaction(
+    //         () => twitchAlertsContext.follower,
+    //         (follower) => {
+    //             if (follower) {
+    //                 console.log(`New follower: ${follower.displayName}`);
+    //                 // You can add more code here to handle the new follower
+    //             }
+    //         },
+    //     );
 
-        // Clean up the reaction when the component is unmounted
-        return () => disposer();
-    }, [twitchAlertsContext]);
+    //     // Clean up the reaction when the component is unmounted
+    //     return () => disposer();
+    // }, [twitchAlertsContext]);
 
     useEffect(() => {
         if (animationEnded) {
@@ -118,7 +164,7 @@ const TwitchFollowers = observer(() => {
     }
 
     return (
-        <FollowerContainer onAnimationEnd={onAnimationEnd}>
+        <FollowerContainer onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd}>
             <StripBackground />
             <StripColor />
             <TextContainer>
