@@ -1,28 +1,52 @@
 import React from 'react';
-import { runInAction, makeAutoObservable } from 'mobx';
+import { runInAction, makeObservable, observable } from 'mobx';
 
 class TwitchAlertsStore {
+    _queue = [];
+    _processing = false;
+
     follower = null;
 
     constructor() {
-        makeAutoObservable(this);
+        makeObservable(this, {
+            follower: observable,
+        });
     }
 
-    // In your FollowerStore
-    handleEvent(event, callback) {
+    addEvent(event) {
+        this._queue.push(event);
+
+        // If not currently processing an event, start processing
+        if (!this._processing) {
+            this.processNextEvent();
+        }
+    }
+
+    processNextEvent() {
+        if (this._queue.length > 0) {
+            this._processing = true;
+            const event = this._queue.shift();
+
+            this.handleEvent(event);
+        }
+    }
+
+    handleEvent(event) {
         switch (event.type) {
             case 'new-follower':
-                this.follower = event.data;
-                this.callback = () => {
-                    runInAction(() => {
-                        this.follower = null;
-                        callback();
-                    });
-                };
-
-
+                runInAction(() => {
+                    this.follower = {
+                        data: event.data,
+                        callback: () => {
+                            this.follower = null;
+                            this._processing = false;
+                            this.processNextEvent();
+                        },
+                    };
+                });
                 break;
-            // Add more cases here for other event types
+
+                // Add more cases here for other event types
             default:
                 console.error('Unhandled event type:', event.type);
                 break;

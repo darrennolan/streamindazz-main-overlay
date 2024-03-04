@@ -23,12 +23,12 @@ const bootApp = () => {
             </Router>
         </TwitchAlertsContext.Provider>
     ));
-}
+};
 
 window.speechSynthesis.onvoiceschanged = function() {
     // after voices are loaded, we'll boot the app
     developerScale();
     bootApp();
-}
+};
 
 new SpeechSynthesisUtterance(`Loading voices on page boot`); // don't stress, we don't ask it to talk.

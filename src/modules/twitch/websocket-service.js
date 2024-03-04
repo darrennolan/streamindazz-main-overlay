@@ -11,7 +11,7 @@ export default class WebSocketService {
         this.queue = [];
         this.processing = false;
         this.twitchConfig = twitchConfig;
-        this.authentication = getAuthenticationSingleton(this.twitchConfig)
+        this.authentication = getAuthenticationSingleton(this.twitchConfig);
     }
 
     async connect() {

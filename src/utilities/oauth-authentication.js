@@ -24,8 +24,8 @@ export default class OAuthAuthentication {
 
     get currentAccessToken() { return localStorage.getItem(`${this.localStoragePrefix}access_token`) || null; }
     get currentRefreshToken() { return localStorage.getItem(`${this.localStoragePrefix}refresh_token`) || null; }
-    get currentExpiresIn() { return localStorage.getItem(`${this.localStoragePrefix}refresh_in`) || null }
-    get currentExpires() { return localStorage.getItem(`${this.localStoragePrefix}expires`) || null }
+    get currentExpiresIn() { return localStorage.getItem(`${this.localStoragePrefix}refresh_in`) || null; }
+    get currentExpires() { return localStorage.getItem(`${this.localStoragePrefix}expires`) || null; }
 
     // On page load, try to fetch auth code from current browser search URL
     async processCodeFromUrlIfPresent() {
@@ -93,7 +93,7 @@ export default class OAuthAuthentication {
 
         window.localStorage.setItem(`${this.localStoragePrefix}code_verifier`, code_verifier);
 
-        const authUrl = new URL(this.authorizationEndpoint)
+        const authUrl = new URL(this.authorizationEndpoint);
         const params = {
             response_type: this.responseType,
             client_id: this.clientId,

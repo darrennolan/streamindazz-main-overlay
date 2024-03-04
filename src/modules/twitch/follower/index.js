@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { observer } from 'mobx-react';
-import { twitchAlertsStore, TwitchAlertsContext } from '../alerts-store';
+import { TwitchAlertsContext } from '../alerts-store';
 
 import soundWhoosh from '../../../sounds/whoosh/whoosh.mp3';
 
@@ -22,7 +22,7 @@ const slideOutLeft = keyframes`
 
 const slideOutRight = keyframes`
     0% { transform: translateX(0); }
-    100% { transform: translateX(150%); }
+    100% { transform: translateX(200%); }
 `;
 
 const FollowerContainer = styled.div`
@@ -44,7 +44,7 @@ const StripBackground = styled.div`
     background-color: rgba(211, 211, 211, 0.8);
 
     animation: ${slideInLeft} 0.25s forwards, ${slideOutLeft} 0.25s 5.25s forwards;
-`
+`;
 
 const StripColor = styled.div`
     position: absolute;
@@ -92,12 +92,12 @@ const TwitchFollowers = observer(() => {
             audioWhoosh.playbackRate = 2;
             audioWhoosh.play();
         }
-    }
+    };
 
     const onAnimationEnd = (e) => {
         if (e.animationName === slideInLeft.name) {
             // read out follower name + text
-            const utterance = new SpeechSynthesisUtterance(`New Follower! ${twitchAlertsContext.follower.displayName}!`);
+            const utterance = new SpeechSynthesisUtterance(`New Follower! ${twitchAlertsContext.follower.data.displayName}!`);
             const voices = speechSynthesis.getVoices();
 
             // Preferred voice URIs
@@ -134,28 +134,12 @@ const TwitchFollowers = observer(() => {
         if (e.animationName === slideOutRight.name) {
             setAnimationEnded(true);
         }
-    }
-
-    // useEffect(() => {
-    //     // Set up a reaction that runs whenever the follower changes
-    //     const disposer = reaction(
-    //         () => twitchAlertsContext.follower,
-    //         (follower) => {
-    //             if (follower) {
-    //                 console.log(`New follower: ${follower.displayName}`);
-    //                 // You can add more code here to handle the new follower
-    //             }
-    //         },
-    //     );
-
-    //     // Clean up the reaction when the component is unmounted
-    //     return () => disposer();
-    // }, [twitchAlertsContext]);
+    };
 
     useEffect(() => {
         if (animationEnded) {
             setAnimationEnded(false);
-            twitchAlertsStore.callback();
+            twitchAlertsContext.follower.callback();
         }
     }, [animationEnded]);
 
@@ -164,13 +148,13 @@ const TwitchFollowers = observer(() => {
     }
 
     return (
-        <FollowerContainer onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd}>
+        <FollowerContainer key={twitchAlertsContext.follower.data.displayName} onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd}>
             <StripBackground />
             <StripColor />
             <TextContainer>
                 <Text>
                     NEW FOLLOWER!<br />
-                    <TextUsername>{twitchAlertsContext.follower.displayName}</TextUsername>
+                    <TextUsername>{twitchAlertsContext.follower.data.displayName}</TextUsername>
                 </Text>
             </TextContainer>
         </FollowerContainer>

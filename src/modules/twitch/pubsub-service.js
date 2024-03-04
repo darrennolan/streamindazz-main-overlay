@@ -20,8 +20,10 @@ export default class PubSubService {
         if (config.useDeveloperScale) {
             window.test = {
                 follower: (name = 'ThisIsMakena') => {
-                    this.queue.push({type: 'new-follower', data: {displayName: name}});
-                    this.processEvents();
+                    console.log('adding', name);
+                    twitchAlertsStore.addEvent({type: 'new-follower', data: {displayName: name}});
+
+                    return true;
                 },
             };
         }
@@ -111,8 +113,7 @@ export default class PubSubService {
                 if (data.status === 'QUEUED') {
                     console.info(`Received activity-feed-alerts-v2.${this.userId} message:`, message);
 
-                    this.queue.push({type: 'new-follower', data: data.follower});
-                    this.processEvents();
+                    twitchAlertsStore.addEvent({type: 'new-follower', data: data.follower});
                 }
 
                 break;
@@ -130,18 +131,5 @@ export default class PubSubService {
         };
 
         this.ws.send(JSON.stringify(message));
-    }
-
-    processEvents() {
-        if (!this.processing && this.queue.length > 0) {
-            const event = this.queue.shift();
-
-            this.processing = true;
-
-            twitchAlertsStore.handleEvent(event, () => {
-                this.processing = false;
-                this.processEvents();
-            });
-        }
     }
 }
