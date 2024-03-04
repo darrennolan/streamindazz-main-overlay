@@ -21,7 +21,7 @@ module.exports = {
         'react',
     ],
     rules: {
-        indent: ['error', 4],
+        indent: ['error', 4, { SwitchCase: 1 }],
         'dot-notation': ['error', { allowKeywords: true }],
         'quote-props': ['error', 'as-needed'], // Only use quotes around object properties where required
         quotes: ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }], // Prefer single quotes, allow template literals and escaping

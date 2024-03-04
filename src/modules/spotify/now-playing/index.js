@@ -9,7 +9,8 @@ const SpotifyNowPlayingContainer = styled.div`
 `;
 
 const LoginButton = styled.button`
-  background-color: 1DB954; /* spotify green */
+  background-color: #1DB954; /* spotify green */
+  padding: 10px;
   color: white;
   font-size: 16px;
   border: none;
@@ -37,9 +38,9 @@ function SpotifyNowPlaying({spotifyConfig}) {
             }
         };
 
-        // Immediately invoke the check, then set it to repeat every 5 seconds
+        // Immediately invoke the check, then set it to repeat every 10 seconds
         getAccessCodeAndFetchNowPlaying();
-        const intervalId = setInterval(getAccessCodeAndFetchNowPlaying, 5000);
+        const intervalId = setInterval(getAccessCodeAndFetchNowPlaying, 10000);
 
         // Cleanup interval on component unmount
         return () => clearInterval(intervalId);
@@ -79,12 +80,8 @@ function SpotifyNowPlaying({spotifyConfig}) {
 
     const handleLogin = () => {
         setIsLoading(true);
-        spotifyAuthentication.redirectToSpotifyAuthorize();
+        spotifyAuthentication.redirectToAuthorize();
     };
-
-    if (isLoading) {
-        return <SpotifyNowPlayingContainer>Wait...</SpotifyNowPlayingContainer>;
-    }
 
     return (
         <SpotifyNowPlayingContainer>

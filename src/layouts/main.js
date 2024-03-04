@@ -6,6 +6,8 @@ import config from '../config';
 import backgroundImage from '../images/dev-background.jpg';
 
 import SpotifyNowPlaying from '../modules/spotify/now-playing';
+import TwitchLoginIfNeeded from '../modules/twitch/login-if-needed';
+import TwitchFollower from '../modules/twitch/follower';
 
 const Container = styled.div`
     position: relative;
@@ -22,6 +24,16 @@ const DevContainer = styled(Container)`
     border: dotted 5px green;
     background-image: url('${backgroundImage}');
     background-size: cover;
+`;
+
+const PositionTwitchLoginIfNeeded = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+`;
+
+const PositionTwitchFollower = styled.div`
 `;
 
 const PositionSpotifyNowPlaying = styled.div`
@@ -45,8 +57,16 @@ const MainLayout = ({
 
     return (
         <ContainerToUse>
+            <PositionTwitchLoginIfNeeded>
+                <TwitchLoginIfNeeded twitchConfig={config.twitch} />
+            </PositionTwitchLoginIfNeeded>
+
+            <PositionTwitchFollower>
+                <TwitchFollower />
+            </PositionTwitchFollower>
+
             <PositionSpotifyNowPlaying>
-                <SpotifyNowPlaying spotifyConfig={config.spotifyNowPlaying} />
+                <SpotifyNowPlaying spotifyConfig={config.spotify} />
             </PositionSpotifyNowPlaying>
 
             <StyledStreamerName>

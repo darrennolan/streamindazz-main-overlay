@@ -7,8 +7,15 @@ const config = {
     themeForegroundColor: '#FFF',
     themeForegroundShadowColor: '#000',
 
-    spotifyNowPlaying: {
+    spotify: {
         clientId: process.env.SPOTIFY_NOW_PLAYING_CLIENT_ID,
+        nowPlaying: {
+
+        },
+    },
+
+    twitch: {
+        clientId: process.env.TWITCH_CLIENT_ID,
     },
 };
 

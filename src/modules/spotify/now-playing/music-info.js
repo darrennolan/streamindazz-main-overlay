@@ -56,15 +56,19 @@ const MusicInfo = ({ albumArtUrl, artist, track }) => {
     // Generate a unique key based on the props
     const key = `${albumArtUrl}-${artist}-${track}`;
 
-    return (
-        <MusicInfoContainer key={key}>
-            <AlbumArt src={albumArtUrl} alt="Album Art" />
-            <MusicDetails>
-                <h4>{track}</h4>
-                <p>{artist}</p>
-            </MusicDetails>
-        </MusicInfoContainer>
-    );
+    if (albumArtUrl && artist && track) {
+        return (
+            <MusicInfoContainer key={key}>
+                <AlbumArt src={albumArtUrl} alt="Album Art" />
+                <MusicDetails>
+                    <h4>{track}</h4>
+                    <p>{artist}</p>
+                </MusicDetails>
+            </MusicInfoContainer>
+        );
+    } else {
+        return null;
+    }
 };
 
 MusicInfo.propTypes = {
