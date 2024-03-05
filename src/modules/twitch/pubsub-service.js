@@ -134,8 +134,8 @@ export default class PubSubService {
         }
 
         const topic = message?.data?.topic; // activity-feed-alerts-v2.${userId}
-        const typeName = message?.data?.message?.data?.__typename;
-        const data = message?.data?.message && JSON.parse(message?.data?.message);
+        const parsedMessage = message?.data?.message && JSON.parse(message?.data?.message);
+        const typeName = parsedMessage?.data?.__typename;
 
         if (topic != `activity-feed-alerts-v2.${this.userId}`) {
             console.error('Unhandled topic:', topic, message);
@@ -143,7 +143,7 @@ export default class PubSubService {
             return;
         }
 
-        if (data.status !== 'QUEUED') {
+        if (parsedMessage?.data?.status !== 'QUEUED') {
             console.warn('Ignored message', message);
 
             return;
@@ -171,7 +171,7 @@ export default class PubSubService {
                     }
                 }
                 */
-                twitchAlertsStore.addEvent({type: 'new-follower', data: data.follower});
+                twitchAlertsStore.addEvent({type: 'new-follower', data: parsedMessage.data});
                 break;
 
             case 'ActivityFeedResubscriptionAlert':
@@ -207,7 +207,7 @@ export default class PubSubService {
                     }
                 }
                 */
-                twitchAlertsStore.addEvent({type: 'new-subscriber', data: data.subscriber});
+                twitchAlertsStore.addEvent({type: 'new-subscriber', data: parsedMessage.data});
                 break;
 
             case 'ActivityFeedPrimeSubscriptionAlert':
@@ -401,7 +401,7 @@ export default class PubSubService {
                 }
                 */
 
-                console.error('not implemented yet');
+                twitchAlertsStore.addEvent({type: 'raid', data: parsedMessage.data});
                 break;
 
             case 'ActivityFeedHypeTrainAlert':

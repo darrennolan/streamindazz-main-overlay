@@ -73,7 +73,7 @@ const Terminators = styled.div`
     width: max-content;
     overflow: hidden;
 
-    animation: ${slideInFromRight} ${props => props.$animationLengthInSeconds}s linear both;
+    animation: ${slideInFromRight} ${props => props.$animationLengthInSeconds + 3}s linear both;
 `;
 
 const TerminatorImg = styled.img`
