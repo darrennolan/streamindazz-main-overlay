@@ -22,16 +22,16 @@ export default class OAuthAuthentication {
         this.processCodeFromUrlIfPresent();
     }
 
-    get currentAccessToken() { return localStorage.getItem(`${this.localStoragePrefix}access_token`) || null; }
-    get currentRefreshToken() { return localStorage.getItem(`${this.localStoragePrefix}refresh_token`) || null; }
-    get currentExpiresIn() { return localStorage.getItem(`${this.localStoragePrefix}refresh_in`) || null; }
-    get currentExpires() { return localStorage.getItem(`${this.localStoragePrefix}expires`) || null; }
+    get currentAccessToken() { return window.localStorage.getItem(`${this.localStoragePrefix}access_token`) || null; }
+    get currentRefreshToken() { return window.localStorage.getItem(`${this.localStoragePrefix}refresh_token`) || null; }
+    get currentExpiresIn() { return window.localStorage.getItem(`${this.localStoragePrefix}refresh_in`) || null; }
+    get currentExpires() { return window.localStorage.getItem(`${this.localStoragePrefix}expires`) || null; }
 
     // On page load, try to fetch auth code from current browser search URL
     async processCodeFromUrlIfPresent() {
         const args = new URLSearchParams(window.location.search);
         const code = args.get('code');
-        const codeVerifier = localStorage.getItem(`${this.localStoragePrefix}code_verifier`);
+        const codeVerifier = window.localStorage.getItem(`${this.localStoragePrefix}code_verifier`);
 
         // If we find a code and we're expecting a spotify token, we're in a callback, do a token exchange
         if (code && codeVerifier) {
@@ -51,7 +51,7 @@ export default class OAuthAuthentication {
         } else if (codeVerifier && !code) {
             // This means we have a code_verifier but no code, we're in a weird state, clear the code_verifier
             // Potentially someone hit 'back' after heading to the auth web page.
-            localStorage.removeItem(`${this.localStoragePrefix}code_verifier`);
+            window.localStorage.removeItem(`${this.localStoragePrefix}code_verifier`);
         }
     }
 
@@ -61,19 +61,19 @@ export default class OAuthAuthentication {
         const expiry = new Date(now.getTime() + (expires_in * 1000));
 
         if (access_token && refresh_token && expires_in) {
-            localStorage.setItem(`${this.localStoragePrefix}access_token`, access_token);
-            localStorage.setItem(`${this.localStoragePrefix}refresh_token`, refresh_token);
-            localStorage.setItem(`${this.localStoragePrefix}expires_in`, expires_in);
+            window.localStorage.setItem(`${this.localStoragePrefix}access_token`, access_token);
+            window.localStorage.setItem(`${this.localStoragePrefix}refresh_token`, refresh_token);
+            window.localStorage.setItem(`${this.localStoragePrefix}expires_in`, expires_in);
 
-            localStorage.setItem(`${this.localStoragePrefix}expires`, expiry);
+            window.localStorage.setItem(`${this.localStoragePrefix}expires`, expiry);
         } else {
             console.error(response);
 
-            localStorage.removeItem(`${this.localStoragePrefix}access_token`);
-            localStorage.removeItem(`${this.localStoragePrefix}refresh_token`);
-            localStorage.removeItem(`${this.localStoragePrefix}expires_in`);
+            window.localStorage.removeItem(`${this.localStoragePrefix}access_token`);
+            window.localStorage.removeItem(`${this.localStoragePrefix}refresh_token`);
+            window.localStorage.removeItem(`${this.localStoragePrefix}expires_in`);
 
-            localStorage.removeItem(`${this.localStoragePrefix}expires`);
+            window.localStorage.removeItem(`${this.localStoragePrefix}expires`);
         }
     }
 
@@ -91,7 +91,7 @@ export default class OAuthAuthentication {
             .replace(/\+/g, '-')
             .replace(/\//g, '_');
 
-        window.localStorage.setItem(`${this.localStoragePrefix}code_verifier`, code_verifier);
+        window.window.localStorage.setItem(`${this.localStoragePrefix}code_verifier`, code_verifier);
 
         const authUrl = new URL(this.authorizationEndpoint);
         const params = {
@@ -110,10 +110,10 @@ export default class OAuthAuthentication {
     }
 
     async getTokensFromUrlCode(code) {
-        const code_verifier = localStorage.getItem(`${this.localStoragePrefix}code_verifier`);
+        const code_verifier = window.localStorage.getItem(`${this.localStoragePrefix}code_verifier`);
 
         // Only use this code once, if fetch fails, we'll need to re-auth.
-        window.localStorage.removeItem(`${this.localStoragePrefix}code_verifier`);
+        window.window.localStorage.removeItem(`${this.localStoragePrefix}code_verifier`);
 
         const response = await fetch(this.tokenEndpoint, {
             method: 'POST',

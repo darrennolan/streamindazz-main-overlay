@@ -1,15 +1,17 @@
 import React from 'react';
 import { runInAction, makeObservable, observable } from 'mobx';
 
-class TwitchAlertsStore {
+export class TwitchAlertsStoreClass {
     _queue = [];
     _processing = false;
 
     follower = null;
+    raid = null;
 
     constructor() {
         makeObservable(this, {
             follower: observable,
+            raid: observable,
         });
     }
 
@@ -46,7 +48,19 @@ class TwitchAlertsStore {
                 });
                 break;
 
-                // Add more cases here for other event types
+            case 'raid':
+                runInAction(() => {
+                    this.raid = {
+                        data: event.data,
+                        callback: () => {
+                            this.raid = null;
+                            this._processing = false;
+                            this.processNextEvent();
+                        },
+                    };
+                });
+                break;
+
             default:
                 console.error('Unhandled event type:', event.type);
                 break;
@@ -54,5 +68,5 @@ class TwitchAlertsStore {
     }
 }
 
-export const twitchAlertsStore = new TwitchAlertsStore();
+export const twitchAlertsStore = new TwitchAlertsStoreClass();
 export const TwitchAlertsContext = React.createContext(twitchAlertsStore);

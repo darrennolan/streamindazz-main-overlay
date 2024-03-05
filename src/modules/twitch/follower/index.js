@@ -82,14 +82,14 @@ const TextUsername = styled.span`
     font-size: 80px;
 `;
 
-const TwitchFollowers = observer(() => {
+const TwitchFollower = observer(() => {
     const twitchAlertsContext = useContext(TwitchAlertsContext);
     const [animationEnded, setAnimationEnded] = useState(false);
     const audioWhoosh = new Audio(soundWhoosh);
 
     const onAnimationStart = (e) => {
         if (e.animationName === slideInLeft.name || e.animationName === slideOutRight.name) {
-            audioWhoosh.playbackRate = 2;
+            audioWhoosh.playbackRate = 3;
             audioWhoosh.play();
         }
     };
@@ -97,7 +97,7 @@ const TwitchFollowers = observer(() => {
     const onAnimationEnd = (e) => {
         if (e.animationName === slideInLeft.name) {
             // read out follower name + text
-            const utterance = new SpeechSynthesisUtterance(`New Follower! ${twitchAlertsContext.follower.data.displayName}!`);
+            const utterance = new SpeechSynthesisUtterance(`New Follower! ${twitchAlertsContext.follower.data.follower.displayName}!`);
             const voices = speechSynthesis.getVoices();
 
             // Preferred voice URIs
@@ -148,17 +148,17 @@ const TwitchFollowers = observer(() => {
     }
 
     return (
-        <FollowerContainer key={twitchAlertsContext.follower.data.displayName} onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd}>
+        <FollowerContainer key={twitchAlertsContext.follower.data.id + twitchAlertsContext.follower.data.updatedAt} onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd}>
             <StripBackground />
             <StripColor />
             <TextContainer>
                 <Text>
                     NEW FOLLOWER!<br />
-                    <TextUsername>{twitchAlertsContext.follower.data.displayName}</TextUsername>
+                    <TextUsername>{twitchAlertsContext.follower.data.follower.displayName}</TextUsername>
                 </Text>
             </TextContainer>
         </FollowerContainer>
     );
 });
 
-export default TwitchFollowers;
+export default TwitchFollower;

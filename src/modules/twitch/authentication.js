@@ -19,9 +19,9 @@ class TwitchAuthentication extends OAuthAuthentication {
         // This only happens on a page refresh. If there's not 12 hours remaining in the expiry,
         // we'll remove the expiry and force a re-authentication.
         const currentDate = new Date();
-        const currentExpires = localStorage.getItem(`${this.localStoragePrefix}expires`);
+        const currentExpires = window.localStorage.getItem(`${this.localStoragePrefix}expires`);
 
-        if (this.scope !== localStorage.getItem(`${this.localStoragePrefix}scope`)) {
+        if (this.scope !== window.localStorage.getItem(`${this.localStoragePrefix}scope`)) {
             this.logout();
         }
 
@@ -29,7 +29,7 @@ class TwitchAuthentication extends OAuthAuthentication {
             const expiryDate = new Date(currentExpires);
 
             if (expiryDate.getTime() - currentDate.getTime() < 12 * 60 * 60 * 1000) {
-                localStorage.removeItem(`${this.localStoragePrefix}expires`);
+                window.localStorage.removeItem(`${this.localStoragePrefix}expires`);
             } else {
                 this.lastVerified = currentDate;
             }
@@ -37,21 +37,21 @@ class TwitchAuthentication extends OAuthAuthentication {
     }
 
     logout() {
-        localStorage.removeItem(`${this.localStoragePrefix}access_token`);
-        localStorage.removeItem(`${this.localStoragePrefix}expires`);
-        localStorage.removeItem(`${this.localStoragePrefix}user_id`);
-        localStorage.removeItem(`${this.localStoragePrefix}login`);
+        window.localStorage.removeItem(`${this.localStoragePrefix}access_token`);
+        window.localStorage.removeItem(`${this.localStoragePrefix}expires`);
+        window.localStorage.removeItem(`${this.localStoragePrefix}user_id`);
+        window.localStorage.removeItem(`${this.localStoragePrefix}login`);
     }
 
     async processCodeFromUrlIfPresent() {
-        const codeVerifier = localStorage.getItem(`${this.localStoragePrefix}code_verifier`);
+        const codeVerifier = window.localStorage.getItem(`${this.localStoragePrefix}code_verifier`);
         const url = new URL(window.location.href);
         const hashParams = new URLSearchParams(url.hash.substring(1)); // Remove the leading '#'
         const accessToken = hashParams.get('access_token');
 
         if (codeVerifier && accessToken) {
             // we got twitch details for an access token.
-            localStorage.removeItem(`${this.localStoragePrefix}code_verifier`);
+            window.localStorage.removeItem(`${this.localStoragePrefix}code_verifier`);
 
             hashParams.delete('access_token');
             hashParams.delete('scope');
@@ -62,8 +62,8 @@ class TwitchAuthentication extends OAuthAuthentication {
             this.verifyAccessToken(accessToken)
                 .then((valid) => {
                     if (valid) {
-                        localStorage.setItem(`${this.localStoragePrefix}access_token`, accessToken);
-                        localStorage.setItem(`${this.localStoragePrefix}scope`, this.scope);
+                        window.localStorage.setItem(`${this.localStoragePrefix}access_token`, accessToken);
+                        window.localStorage.setItem(`${this.localStoragePrefix}scope`, this.scope);
                     }
                 });
         }
@@ -71,7 +71,7 @@ class TwitchAuthentication extends OAuthAuthentication {
 
     async getAccessToken() {
         const currentDate = new Date();
-        const accessToken = localStorage.getItem(`${this.localStoragePrefix}access_token`);
+        const accessToken = window.localStorage.getItem(`${this.localStoragePrefix}access_token`);
 
         if (!accessToken) {
             return false;
@@ -110,9 +110,9 @@ class TwitchAuthentication extends OAuthAuthentication {
         if (response.status === 200) {
             // Calculate the expiry date and save it to local storage
             expiryDate.setSeconds(expiryDate.getSeconds() + data.expires_in);
-            localStorage.setItem(`${this.localStoragePrefix}expires`, expiryDate);
-            localStorage.setItem(`${this.localStoragePrefix}user_id`, data.user_id);
-            localStorage.setItem(`${this.localStoragePrefix}login`, data.login);
+            window.localStorage.setItem(`${this.localStoragePrefix}expires`, expiryDate);
+            window.localStorage.setItem(`${this.localStoragePrefix}user_id`, data.user_id);
+            window.localStorage.setItem(`${this.localStoragePrefix}login`, data.login);
 
             return true;
         } else {
@@ -121,11 +121,11 @@ class TwitchAuthentication extends OAuthAuthentication {
     }
 
     get userId() {
-        return localStorage.getItem(`${this.localStoragePrefix}user_id`);
+        return window.localStorage.getItem(`${this.localStoragePrefix}user_id`);
     }
 
     get login() {
-        return localStorage.getItem(`${this.localStoragePrefix}login`);
+        return window.localStorage.getItem(`${this.localStoragePrefix}login`);
     }
 
 }

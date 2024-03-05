@@ -29,6 +29,12 @@ window.speechSynthesis.onvoiceschanged = function() {
     // after voices are loaded, we'll boot the app
     developerScale();
     bootApp();
+
+    setTimeout(() => {
+        // window.test.follower('StreaminDazz');
+        // window.test.raid('StreaminDazz', 14);
+        // window.test.raid('StreaminDazz', 513531);
+    }, 1000);
 };
 
 new SpeechSynthesisUtterance(`Loading voices on page boot`); // don't stress, we don't ask it to talk.

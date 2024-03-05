@@ -8,6 +8,7 @@ import backgroundImage from '../images/dev-background.jpg';
 import SpotifyNowPlaying from '../modules/spotify/now-playing';
 import TwitchLoginIfNeeded from '../modules/twitch/login-if-needed';
 import TwitchFollower from '../modules/twitch/follower';
+import TwitchRaid from '../modules/twitch/raid';
 
 const Container = styled.div`
     position: relative;
@@ -22,7 +23,8 @@ const Container = styled.div`
 
 const DevContainer = styled(Container)`
     border: dotted 5px green;
-    background-image: url('${backgroundImage}');
+    background-color: black;
+    // background-image: url('${backgroundImage}');
     background-size: cover;
 `;
 
@@ -33,8 +35,8 @@ const PositionTwitchLoginIfNeeded = styled.div`
     transform: translate(-50%, -50%);
 `;
 
-const PositionTwitchFollower = styled.div`
-`;
+const PositionTwitchFollower = styled.div``;
+const PositionTwitchRaid = styled.div``;
 
 const PositionSpotifyNowPlaying = styled.div`
     position: absolute;
@@ -64,6 +66,10 @@ const MainLayout = ({
             <PositionTwitchFollower>
                 <TwitchFollower />
             </PositionTwitchFollower>
+
+            <PositionTwitchRaid>
+                <TwitchRaid />
+            </PositionTwitchRaid>
 
             <PositionSpotifyNowPlaying>
                 <SpotifyNowPlaying spotifyConfig={config.spotify} />
