@@ -19,9 +19,7 @@ export default class PubSubService {
 
         if (config.useDeveloperScale) {
             window.test = {
-                follower: (name = 'ThisIsMakena') => {
-                    console.log('Test Follow', name);
-
+                follower: (name = 'StreaminDazz') => {
                     twitchAlertsStore.addEvent({
                         type: 'new-follower',
                         data: {
@@ -42,9 +40,7 @@ export default class PubSubService {
                     return true;
                 },
 
-                raid: (name = 'ThisIsMakena', partySize = 22) => {
-                    console.log('Test Raid', name);
-
+                raid: (name = 'StreaminDazz', partySize = 22) => {
                     twitchAlertsStore.addEvent({
                         type: 'raid',
                         data: {
