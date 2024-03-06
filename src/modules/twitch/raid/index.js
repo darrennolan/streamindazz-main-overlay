@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { observer } from 'mobx-react';
 import numeral from 'numeral';
@@ -49,12 +49,18 @@ const slideDownFromTop = keyframes`
     }
 `;
 
-const slideInFromRight = keyframes`
+const slideInFromRight = ($terminatorsWidth) => keyframes`
     0% {
-        transform: translateX(0%);
+        margin-left: calc(100% + 480px);
+        opacity: 1;
+
+    }
+    95% {
+        opacity: 1;
     }
     100% {
-        transform: translateX(-250%);
+        margin-left: -${$terminatorsWidth}px;
+        opacity: 0;
     }
 `;
 
@@ -64,24 +70,24 @@ const RaidContainer = styled.div`
 `;
 
 const Terminators = styled.div`
-    position: absolute;
     left: 0;
-    margin-left: 200vw;
+    margin-left: calc(100% + 480px);
+
+    position: absolute;
     padding-left: 480px;
     bottom: 0;
     height: 40%;
     width: max-content;
     overflow: hidden;
 
-    animation: ${slideInFromRight} ${props => props.$animationLengthInSeconds + 3}s linear both;
+    animation: ${props => slideInFromRight(props.$terminatorsWidth)} ${props => props.$animationLengthInSeconds + 3}s linear both;
 `;
 
 const TerminatorImg = styled.img`
     margin-top: 28px;
-    margin-left: -${props => props.$randomLeftOffset}px;
-    z-index: ${props => props.$randomZIndex};
-
-    animation: ${terminatorBounceUpAndDown} ${props => props.$randomBounceSpeed}s infinite;
+    margin-left: -300px;
+    z-index: 1;
+    animation: ${terminatorBounceUpAndDown} 1s infinite;
 `;
 
 const TextContainer = styled.div`
@@ -110,45 +116,53 @@ const TextUsername = styled.span`
 
 const TwitchRaid = observer(() => {
     const twitchAlertsContext = useContext(TwitchAlertsContext);
-    const [animationEnded, setAnimationEnded] = useState(false);
-    const everythingDone = false;
+    const terminatorsRef = useRef(null);
+    const [animationStarted, setAnimationStarted] = useState(false);
+    const [terminatorsWidth, setTerminatorsWidth] = useState(0);
 
-    let audioContext, gainNode, source;
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const gainNode = audioContext.createGain();
+    const source = useRef();
 
     // Function to fade out sound
     function fadeOut() {
-        let fadeOutTime = audioContext.currentTime + 0.5; // 0.5 seconds from now
+        let fadeOutTime = audioContext.currentTime + 3; // 3 seconds from now
+
         gainNode.gain.setValueAtTime(1, audioContext.currentTime); // Current volume
-        gainNode.gain.exponentialRampToValueAtTime(0.01, fadeOutTime); // Fade to near 0
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + fadeOutTime); // Fade to near 0
+
+        // @TODO Fade out not working as expected. Just ends.
 
         setTimeout(
             () => {
-                source.stop();
+                if (!source.current) {
+                    return;
+                }
+
+                source.current.stop();
+                setAnimationStarted(false);
                 twitchAlertsContext.raid.callback();
             },
             (fadeOutTime - audioContext.currentTime) * 1000
         ); // Stop the sound after fade
-
     }
 
     const onAnimationStart = (e) => {
-        if (e.animationName !== slideInFromRight.name) {
+        if (animationStarted || !e.target.classList.contains('animated-terminators')) {
             return;
         }
 
-        // Assuming terminatorSound is a URL to an audio file
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        gainNode = audioContext.createGain();
+        setAnimationStarted(true);
 
         fetch(terminatorSound)
-            .then(response => response.arrayBuffer())
-            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-            .then(audioBuffer => {
-                source = audioContext.createBufferSource();
-                source.buffer = audioBuffer;
-                source.connect(gainNode);
+            .then((response) => response.arrayBuffer())
+            .then((arrayBuffer) => audioContext.decodeAudioData(arrayBuffer))
+            .then((audioBuffer) => {
+                source.current = audioContext.createBufferSource();
+                source.current.buffer = audioBuffer;
+                source.current.connect(gainNode);
                 gainNode.connect(audioContext.destination);
-                source.start();
+                source.current.start()
             });
 
         // read out follower name + text
@@ -191,11 +205,10 @@ const TwitchRaid = observer(() => {
     };
 
     useEffect(() => {
-        if (everythingDone) {
-            setAnimationEnded(false);
-
+        if (terminatorsRef.current) {
+            setTerminatorsWidth(terminatorsRef.current.offsetWidth);
         }
-    }, [animationEnded]);
+    }, [terminatorsRef.current, twitchAlertsContext?.raid?.data?.partySize]);
 
     if (!twitchAlertsContext.raid) {
         return null;
@@ -214,8 +227,14 @@ const TwitchRaid = observer(() => {
 
             </TextContainer>
 
-            <Terminators onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd} $animationLengthInSeconds={animationLengthInSeconds}>
-                    {Array.from({ length: Math.min(twitchAlertsContext.raid.data.partySize, 50) }).map((_, i) => {
+            <Terminators
+                ref={terminatorsRef}
+                className="animated-terminators"
+                onAnimationStart={onAnimationStart}
+                onAnimationEnd={onAnimationEnd}
+                $animationLengthInSeconds={animationLengthInSeconds}
+                $terminatorsWidth={terminatorsWidth}>
+                    {Array.from({ length: Math.min(twitchAlertsContext.raid.data.partySize, 500) }).map((_, i) => {
                         // Random offset to be random number between 300 and 400
                         const randomLeftOffset = Math.floor(Math.random() * (460 - 300 + 1)) + 300;
 
@@ -224,9 +243,12 @@ const TwitchRaid = observer(() => {
                         const randomBounceSpeed = Math.random() * 1 + 0.5; // generates a random number between 0.5 and 1
 
                         return <TerminatorImg key={i} src={terminatorImage} width="480" height="641"
-                            $randomLeftOffset={randomLeftOffset}
-                            $randomZIndex={randomZIndex}
-                            $randomBounceSpeed={randomBounceSpeed} />;
+                            style={{
+                                animationDuration: `${randomBounceSpeed}s`,
+                                marginLeft: `-${randomLeftOffset}px`,
+                                zIndex: randomZIndex
+                            }}
+                             />;
                     })}
             </Terminators>
         </RaidContainer>
