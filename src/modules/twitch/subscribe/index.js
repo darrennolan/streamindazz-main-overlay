@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import { observer } from 'mobx-react';
 import { TwitchAlertsContext } from '../alerts-store';
 
+import { getVoiceAndSay } from '../../../utilities/voice';
 import soundWhoosh from '../../../sounds/whoosh/whoosh.mp3';
 
 const fadeIn = keyframes`
@@ -45,40 +46,6 @@ const TwitchSubscriber = observer(() => {
 
     const onAnimationEnd = (e) => {
         if (e.animationName === fadeIn.name) {
-            const utterance = new SpeechSynthesisUtterance();
-            const voices = speechSynthesis.getVoices();
-
-            // Preferred voice URIs
-            const preferredURIs = [
-                'Google UK English Male',
-                'Microsoft David - English (United States)',
-                'Google US English',
-                'Google UK English Female',
-            ];
-
-            // Find a voice that matches a preferred URI
-            utterance.voice = voices
-                .filter(voice => preferredURIs.includes(voice.voiceURI))
-                .sort((a, b) => {
-                    const indexA = preferredURIs.indexOf(a.voiceURI);
-                    const indexB = preferredURIs.indexOf(b.voiceURI);
-
-                    if (indexA === -1 && indexB === -1) {
-                        return 0;
-                    } else if (indexA === -1) {
-                        return 1;
-                    } else if (indexB === -1) {
-                        return -1;
-                    } else {
-                        return indexA - indexB;
-                    }
-                })[0] || voices[0];
-
-            utterance.volume = 1; // Set volume
-            utterance.rate = 1.0; // Set speed
-
-            // Get subscriber data
-
             const displayName = subscriberData.subscriber.displayName;
             const totalDuration = subscriberData.totalDuration;
             const messageContent = subscriberData.messageContent.fragments.map(fragment => fragment.text).join(' ');
@@ -91,8 +58,7 @@ const TwitchSubscriber = observer(() => {
             }
             message += `Your message: ${messageContent}`;
 
-            utterance.text = message;
-            speechSynthesis.speak(utterance);
+            getVoiceAndSay(message);
         }
 
         if (e.animationName === fadeOut.name) {

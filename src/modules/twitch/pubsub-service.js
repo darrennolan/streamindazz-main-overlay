@@ -79,7 +79,10 @@ export default class PubSubService {
                 this.ws.send(JSON.stringify({
                     type: 'LISTEN',
                     data: {
-                        topics: ['activity-feed-alerts-v2.' + this.userId],
+                        topics: [
+                            'activity-feed-alerts-v2.' + this.userId,
+                            'channel-subscribe-events-v1.' + this.userId,
+                        ],
                         auth_token: await this.authentication.getAccessToken(),
                     },
                 }));
@@ -140,7 +143,7 @@ export default class PubSubService {
         }
 
         if (parsedMessage?.data?.status !== 'QUEUED') {
-            console.warn('Ignored message', message);
+            console.warn('Ignored not QUEUED message from alerts', message);
 
             return;
         }

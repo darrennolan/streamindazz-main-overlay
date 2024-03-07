@@ -25,16 +25,13 @@ const bootApp = () => {
     ));
 };
 
-window.speechSynthesis.onvoiceschanged = function() {
-    // after voices are loaded, we'll boot the app
-    developerScale();
-    bootApp();
 
-    setTimeout(() => {
-        // window.test.follower('StreaminDazz');
-        // window.test.raid('StreaminDazz', 14);
-        // window.test.raid('StreaminDazz', 513531);
-    }, 1000);
-};
+developerScale();
+bootApp();
 
-new SpeechSynthesisUtterance(`Loading voices on page boot`); // don't stress, we don't ask it to talk.
+// @TODO after you fix the twitch auth class to use auth promise, you don't need to wait.
+setTimeout(() => {
+    // window.test.follower('StreaminDazz');
+    // window.test.raid('StreaminDazz', 14);
+    // window.test.raid('StreaminDazz', 513531);
+}, 1000);

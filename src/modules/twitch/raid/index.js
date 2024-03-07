@@ -5,6 +5,7 @@ import numeral from 'numeral';
 
 import { TwitchAlertsContext } from '../alerts-store';
 
+import { getVoiceAndSay } from '../../../utilities/voice';
 import terminatorImage from '../../../images/terminator/terminator.png';
 import terminatorSound from '../../../sounds/terminator/the-terminator-2.mp3';
 
@@ -165,39 +166,8 @@ const TwitchRaid = observer(() => {
                 source.current.start()
             });
 
-        // read out follower name + text
-        const utterance = new SpeechSynthesisUtterance(`You are being raided by ${twitchAlertsContext.raid.data.raider.displayName}, with an army of ${twitchAlertsContext.raid.data.partySize}!`);
-        const voices = speechSynthesis.getVoices();
-
-        // Preferred voice URIs
-        const preferredURIs = [
-            'Google UK English Male',
-            'Microsoft David - English (United States)',
-            'Google US English',
-            'Google UK English Female',
-        ];
-
-        // Find a voice that matches a preferred URI
-        utterance.voice = voices
-            .filter(voice => preferredURIs.includes(voice.voiceURI))
-            .sort((a, b) => {
-                const indexA = preferredURIs.indexOf(a.voiceURI);
-                const indexB = preferredURIs.indexOf(b.voiceURI);
-
-                if (indexA === -1 && indexB === -1) {
-                    return 0;
-                } else if (indexA === -1) {
-                    return 1;
-                } else if (indexB === -1) {
-                    return -1;
-                } else {
-                    return indexA - indexB;
-                }
-            })[0] || voices[0];
-
-        utterance.volume = 1; // Set volume
-        utterance.rate = 1.0; // Set speed
-        speechSynthesis.speak(utterance);
+        // read out raider name + party size
+        getVoiceAndSay(`You are being raided by ${twitchAlertsContext.raid.data.raider.displayName}, with an army of ${twitchAlertsContext.raid.data.partySize}!`);
     };
 
     const onAnimationEnd = (e) => {

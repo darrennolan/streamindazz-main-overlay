@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { observer } from 'mobx-react';
 import { TwitchAlertsContext } from '../alerts-store';
+import { getVoiceAndSay } from '../../../utilities/voice';
 
 import soundWhoosh from '../../../sounds/whoosh/whoosh.mp3';
 
@@ -96,39 +97,7 @@ const TwitchFollower = observer(() => {
 
     const onAnimationEnd = (e) => {
         if (e.animationName === slideInLeft.name) {
-            // read out follower name + text
-            const utterance = new SpeechSynthesisUtterance(`New Follower! ${twitchAlertsContext.follower.data.follower.displayName}!`);
-            const voices = speechSynthesis.getVoices();
-
-            // Preferred voice URIs
-            const preferredURIs = [
-                'Google UK English Male',
-                'Microsoft David - English (United States)',
-                'Google US English',
-                'Google UK English Female',
-            ];
-
-            // Find a voice that matches a preferred URI
-            utterance.voice = voices
-                .filter(voice => preferredURIs.includes(voice.voiceURI))
-                .sort((a, b) => {
-                    const indexA = preferredURIs.indexOf(a.voiceURI);
-                    const indexB = preferredURIs.indexOf(b.voiceURI);
-
-                    if (indexA === -1 && indexB === -1) {
-                        return 0;
-                    } else if (indexA === -1) {
-                        return 1;
-                    } else if (indexB === -1) {
-                        return -1;
-                    } else {
-                        return indexA - indexB;
-                    }
-                })[0] || voices[0];
-
-            utterance.volume = 1; // Set volume
-            utterance.rate = 1.0; // Set speed
-            speechSynthesis.speak(utterance);
+            getVoiceAndSay(`New Follower! ${twitchAlertsContext.follower.data.follower.displayName}!`);
         }
 
         if (e.animationName === slideOutRight.name) {

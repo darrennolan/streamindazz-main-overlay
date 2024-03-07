@@ -12,6 +12,7 @@ class TwitchAuthentication extends OAuthAuthentication {
             responseType: 'token',
             scope: [
                 'moderator:read:followers',
+                'channel:read:subscriptions',
             ].join(' '),
             localStoragePrefix: 'twitch_',
         });
@@ -70,6 +71,7 @@ class TwitchAuthentication extends OAuthAuthentication {
     }
 
     async getAccessToken() {
+        // @TODO This needs to make use of an authPromise to be shared if multiple things are happening (plus initial processCodeFromUrlIfPresent) // if (!this.accessTokenPromise) {
         const currentDate = new Date();
         const accessToken = window.localStorage.getItem(`${this.localStoragePrefix}access_token`);
 

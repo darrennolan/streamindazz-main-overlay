@@ -17,26 +17,35 @@ const LoginButton = styled.button`
 
 const LoginIfNeeded = ({twitchConfig}) => {
     const twitchAuthentication = getTwitchAuthentication(twitchConfig);
+    const webSocketService = new WebSocketService({twitchConfig});
+    const pubSubService = new PubSubService({twitchConfig});
 
     const [isLoading, setIsLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    useEffect(() => {
-        async function checkAuthentication() {
-            const webSocketService = new WebSocketService({twitchConfig});
-            const pubSubService = new PubSubService({twitchConfig});
+    async function checkAuthentication() {
+        const accessToken = await twitchAuthentication.getAccessToken();
 
-            const accessToken = await twitchAuthentication.getAccessToken();
+        setIsLoggedIn(!!accessToken);
 
-            setIsLoggedIn(!!accessToken);
-
-            if (accessToken) {
-                webSocketService.connect();
-                pubSubService.connect();
-            }
+        if (accessToken) {
+            webSocketService.connect();
+            pubSubService.connect();
         }
 
-        checkAuthentication();
+        return !!accessToken;
+    }
+
+    useEffect(() => {
+        const timeoutId = setTimeout(async () => {
+            const isAuthed = await checkAuthentication();
+
+            if (isAuthed) {
+                clearTimeout(timeoutId);
+            }
+        }, 1000)
+
+        return () => clearTimeout(timeoutId);
     }, []);
 
     const handleLogin = async () => {
