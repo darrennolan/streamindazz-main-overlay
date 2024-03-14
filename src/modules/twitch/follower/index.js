@@ -5,6 +5,8 @@ import { TwitchAlertsContext } from '../alerts-store';
 import { getVoiceAndSay } from '../../../utilities/voice';
 
 import soundWhoosh from '../../../sounds/whoosh/whoosh.mp3';
+import soundPunch from '../../../sounds/punch/heavy-face-punch.mp3';
+import soundCartoonHorn from '../../../sounds/cartoon-horn/cartoon-horn.mp3';
 
 const slideInLeft = keyframes`
     0% { transform: translateX(-150%); }
@@ -26,6 +28,20 @@ const slideOutRight = keyframes`
     100% { transform: translateX(200%); }
 `;
 
+const shake = keyframes`
+    0% { transform: translateY(-50%) translateX(0%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    10% { transform: translateY(-52%) translateX(-2%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    20% { transform: translateY(-48%) translateX(2%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    30% { transform: translateY(-49%) translateX(-1%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    40% { transform: translateY(-51%) translateX(1%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    50% { transform: translateY(-50%) translateX(0%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    60% { transform: translateY(-52%) translateX(-2%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    70% { transform: translateY(-48%) translateX(2%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    80% { transform: translateY(-49%) translateX(-1%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    90% { transform: translateY(-51%) translateX(1%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+    100% { transform: translateY(-50%) translateX(0%) perspective(1000px) rotateY(-20deg) rotateX(20deg); }
+`;
+
 const FollowerContainer = styled.div`
     position: absolute;
     top: 50%;
@@ -36,6 +52,8 @@ const FollowerContainer = styled.div`
     left: -22%;  /* Adjust as needed */
     width: 120%;  /* Adjust as needed */
     transform: translateY(-50%) perspective(1000px) rotateY(-20deg) rotateX(20deg);
+
+    animation: ${shake}  0.25s 0.25s forwards;
 `;
 
 const StripBackground = styled.div`
@@ -87,6 +105,8 @@ const TwitchFollower = observer(() => {
     const twitchAlertsContext = useContext(TwitchAlertsContext);
     const [animationEnded, setAnimationEnded] = useState(false);
     const audioWhoosh = new Audio(soundWhoosh);
+    const audioPunch = new Audio(soundPunch);
+    const audioCartoonHorn = new Audio(soundCartoonHorn);
 
     const onAnimationStart = (e) => {
         if (e.animationName === slideInLeft.name || e.animationName === slideOutRight.name) {
@@ -97,6 +117,8 @@ const TwitchFollower = observer(() => {
 
     const onAnimationEnd = (e) => {
         if (e.animationName === slideInLeft.name) {
+            audioPunch.play();
+            audioCartoonHorn.play();
             getVoiceAndSay(`New Follower! ${twitchAlertsContext.follower.data.follower.displayName}!`);
         }
 

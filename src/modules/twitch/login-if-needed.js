@@ -20,6 +20,7 @@ const LoginIfNeeded = ({twitchConfig}) => {
     const webSocketService = new WebSocketService({twitchConfig});
     const pubSubService = new PubSubService({twitchConfig});
 
+    const [hasRunOnce, setHasRunOnce] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -27,6 +28,7 @@ const LoginIfNeeded = ({twitchConfig}) => {
         const accessToken = await twitchAuthentication.getAccessToken();
 
         setIsLoggedIn(!!accessToken);
+        setHasRunOnce(true);
 
         if (accessToken) {
             webSocketService.connect();
@@ -52,6 +54,10 @@ const LoginIfNeeded = ({twitchConfig}) => {
         setIsLoading(true);
         twitchAuthentication.redirectToAuthorize();
     };
+
+    if (!hasRunOnce) {
+        return null;
+    }
 
     return (
         <div>

@@ -34,4 +34,5 @@ setTimeout(() => {
     // window.test.follower('StreaminDazz');
     // window.test.raid('StreaminDazz', 14);
     // window.test.raid('StreaminDazz', 513531);
+    window.test.subscriberNew();
 }, 1000);

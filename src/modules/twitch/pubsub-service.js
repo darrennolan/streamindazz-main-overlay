@@ -61,6 +61,36 @@ export default class PubSubService {
 
                     return true;
                 },
+
+                subscriberNew: (
+                    name = 'StreaminDazz',
+                    type = 'new',
+                    message = 'Yay resub',
+                    subscriptionDuration = 1,
+                    streakDuration = 1,
+                    totalGiftCount = 1,
+                    quantityPurchased = 1,
+                    tier = 'T_1000' ,
+                ) => {
+                    twitchAlertsStore.addEvent({
+                        type: 'subscriber',
+                        data: {
+                            id: name + Math.random(),
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString(),
+                            displayName: name,
+                            type,
+                            message,
+                            subscriptionDuration,
+                            streakDuration,
+                            totalGiftCount,
+                            quantityPurchased,
+                            tier,
+                        },
+                    });
+
+                    return true;
+                },
             };
         }
     }
@@ -81,7 +111,7 @@ export default class PubSubService {
                     data: {
                         topics: [
                             'activity-feed-alerts-v2.' + this.userId,
-                            'channel-subscribe-events-v1.' + this.userId,
+                            // 'channel-subscribe-events-v1.' + this.userId,
                         ],
                         auth_token: await this.authentication.getAccessToken(),
                     },
@@ -174,89 +204,63 @@ export default class PubSubService {
                 break;
 
             case 'ActivityFeedResubscriptionAlert':
-                /* Example queue message:
-                {
-                    "type": "activity_feed_alerts_update",
-                    "data": {
-                        "__typename": "ActivityFeedResubscriptionAlert",
-                        "id": "RESUBSCRIPTION:a2033e08-5277-4410-ba32-82381c5acdbc",
-                        "status": "QUEUED",
-                        "createdAt": "2024-02-28T22:22:19.040751952Z",
-                        "updatedAt": "2024-03-04T07:01:24.511402649Z",
-                        "totalDuration": 2,
-                        "streakDuration": 0,
-                        "multiMonthDuration": 1,
-                        "messageContent": {
-                            "__typename": "ActivityFeedAlertMessageContent",
-                            "fragments": [
-                                {
-                                    "__typename": "ActivityFeedAlertMessageTextFragment",
-                                    "text": "oh em gee"
-                                }
-                            ]
-                        },
-                        "tier": "T_1000",
-                        "subscriber": {
-                            "__typename": "User",
-                            "id": "125318454",
-                            "displayName": "ThisIsMakena",
-                            "login": "thisismakena"
-                        },
-                        "viewerCustomizationSelection": null
-                    }
-                }
-                */
-                twitchAlertsStore.addEvent({type: 'new-subscriber', data: parsedMessage.data});
-                break;
-
             case 'ActivityFeedPrimeSubscriptionAlert':
-                /* Example queue message:
-                    {
-                        "type": "activity_feed_alerts_update",
-                        "data": {
-                            "__typename": "ActivityFeedPrimeSubscriptionAlert",
-                            "id": "PRIME_SUBSCRIPTION:ec25c7c6-606c-43bd-97c5-c63361724509",
-                            "status": "PLAYING",
-                            "createdAt": "2024-02-26T01:18:54.782006173Z",
-                            "updatedAt": "2024-03-05T06:46:42.232939539Z",
-                            "subscriber": {
-                                "__typename": "User",
-                                "id": "182656748",
-                                "displayName": "Reaper_link",
-                                "login": "reaper_link"
-                            }
-                        }
-                    }
-                */
-
-                console.error('not implemented yet');
-                break;
-
             case 'ActivityFeedCommunityGiftSubscriptionAlert':
-                /* Example queue message:
-                {
-                    "type": "activity_feed_alerts_update",
-                    "data": {
-                        "__typename": "ActivityFeedCommunityGiftSubscriptionAlert",
-                        "id": "COMMUNITY_GIFT_SUBSCRIPTION:a0ffd5eb-56e6-449d-8d9c-ac45eaee6253",
-                        "status": "PLAYING",
-                        "createdAt": "2024-02-20T01:54:42.133808336Z",
-                        "updatedAt": "2024-03-05T06:48:50.463177531Z",
-                        "quantity": 1,
-                        "multiMonthDuration": 1,
-                        "tier": "T_1000",
-                        "gifter": {
-                            "__typename": "User",
-                            "id": "48363948",
-                            "displayName": "macrossfiru",
-                            "login": "macrossfiru"
-                        },
-                        "isAnonymous": false,
-                        "totalGiftCount": 3
-                    }
+                // Initialize the common structure with default/missing values
+                let normalizedSubscriber = {
+                    id: message.data.id,
+                    createdAt: message.data.createdAt,
+                    updatedAt: message.data.updatedAt,
+                    displayName: null,
+                    type: null,
+                    message: null,
+                    subscriptionDuration: null,
+                    streakDuration: null,
+                    totalGiftCount: null,
+                    quantityPurchased: null,
+                    tier: message.data.tier || "T_1000", // Default tier
+                };
+
+                // Identify the message type and extract relevant data
+                let typeName = message.data.__typename;
+                switch (typeName) {
+                    case "ActivityFeedCommunityGiftSubscriptionAlert":
+                        normalizedSubscriber.displayName = message.data.gifter.displayName;
+                        normalizedSubscriber.type = "gift";
+                        normalizedSubscriber.totalGiftCount = message.data.totalGiftCount;
+                        normalizedSubscriber.quantityPurchased = message.data.quantity;
+                        break;
+
+                    case "ActivityFeedResubscriptionAlert":
+                        normalizedSubscriber.displayName = message.data.subscriber.displayName;
+                        normalizedSubscriber.type = "resub";
+                        normalizedSubscriber.subscriptionDuration = message.data.totalDuration;
+                        normalizedSubscriber.streakDuration = message.data.streakDuration;
+                        break;
+
+                    // @TODO This case has not yet been captured!  TEST TEST TEST!
+                    case "ActivityFeedSubscriptionAlert":
+                        normalizedSubscriber.displayName = message.data.subscriber.displayName;
+                        normalizedSubscriber.type = "new";
+                        normalizedSubscriber.subscriptionDuration = message.data.totalDuration;
+                        normalizedSubscriber.streakDuration = message.data.streakDuration;
+                        break;
+
+                    case "ActivityFeedPrimeSubscriptionAlert":
+                        normalizedSubscriber.displayName = message.data.subscriber.displayName;
+                        normalizedSubscriber.type = "prime";
+                        break;
+                    // Add cases for other known or anticipated variants
                 }
-                */
-                console.error('not implemented yet');
+
+                if (message.data.messageContent && message.data.messageContent.fragments) {
+                    normalizedSubscriber.message = message.data.messageContent.fragments
+                        .map(fragment => fragment.text)
+                        .join(" ");
+                }
+
+                twitchAlertsStore.addEvent({type: 'subscriber', data: normalizedSubscriber});
+
                 break;
 
             case 'ActivityFeedCheerAlert':

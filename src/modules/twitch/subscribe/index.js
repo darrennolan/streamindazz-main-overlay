@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { TwitchAlertsContext } from '../alerts-store';
 
 import { getVoiceAndSay } from '../../../utilities/voice';
-import soundWhoosh from '../../../sounds/whoosh/whoosh.mp3';
+import soundEffect from '../../../sounds/smash-bros/smash-bros-ultimate-super-smash-bros-ultimate-a-new-foe-has-appeared-sound-effect.mp3';
 
 const fadeIn = keyframes`
     from {
@@ -25,22 +25,26 @@ const fadeOut = keyframes`
 `;
 
 const SubscribeContainer = styled.div`
+    color: white;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateY(-50%) translateX(-50%);
-`;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: black;
 
+    animation: ${fadeIn} 0.5s ease-in-out, ${fadeOut} 0.5s ease-in-out 10s;
+`;
 
 const TwitchSubscriber = observer(() => {
     const twitchAlertsContext = useContext(TwitchAlertsContext);
     const [animationEnded, setAnimationEnded] = useState(false);
-    const subscriberData = twitchAlertsContext.subscriber.data;
-    const audioWhoosh = new Audio(soundWhoosh);
+
+    console.log(twitchAlertsContext.subscriber);
+
+    const subscriberData = twitchAlertsContext.subscriber?.data;
+    const audioEffect = new Audio(soundEffect);
 
     const onAnimationStart = (e) => {
         if (e.animationName === fadeIn.name) {
-            audioWhoosh.play();
+            audioEffect.play();
         }
     };
 
@@ -56,7 +60,10 @@ const TwitchSubscriber = observer(() => {
             if (totalDuration > 1) {
                 message += `This is your ${totalDuration} month of subscription. `;
             }
-            message += `Your message: ${messageContent}`;
+
+            if (messageContent) {
+                message += `They said: ${messageContent}`;
+            }
 
             getVoiceAndSay(message);
         }

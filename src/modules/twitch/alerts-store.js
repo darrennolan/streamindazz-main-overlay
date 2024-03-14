@@ -7,6 +7,7 @@ export class TwitchAlertsStoreClass {
 
     follower = null;
     raid = null;
+    subscriber = null;
 
     constructor() {
         makeObservable(this, {
@@ -54,6 +55,19 @@ export class TwitchAlertsStoreClass {
                         data: event.data,
                         callback: () => {
                             this.raid = null;
+                            this._processing = false;
+                            this.processNextEvent();
+                        },
+                    };
+                });
+                break;
+
+            case 'subscriber':
+                runInAction(() => {
+                    this.subscriber = {
+                        data: event.data,
+                        callback: () => {
+                            this.subscriber = null;
                             this._processing = false;
                             this.processNextEvent();
                         },

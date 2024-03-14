@@ -9,6 +9,7 @@ import SpotifyNowPlaying from '../modules/spotify/now-playing';
 import TwitchLoginIfNeeded from '../modules/twitch/login-if-needed';
 import TwitchFollower from '../modules/twitch/follower';
 import TwitchRaid from '../modules/twitch/raid';
+import TwitchSubscriber from '../modules/twitch/subscribe';
 
 const Container = styled.div`
     position: relative;
@@ -37,6 +38,7 @@ const PositionTwitchLoginIfNeeded = styled.div`
 
 const PositionTwitchFollower = styled.div``;
 const PositionTwitchRaid = styled.div``;
+const PositionTwitchSubscriber = styled.div``;
 
 const PositionSpotifyNowPlaying = styled.div`
     position: absolute;
@@ -62,6 +64,10 @@ const MainLayout = ({
             <PositionTwitchLoginIfNeeded>
                 <TwitchLoginIfNeeded twitchConfig={config.twitch} />
             </PositionTwitchLoginIfNeeded>
+
+            <PositionTwitchSubscriber>
+                <TwitchSubscriber twitchConfig={config.twitch} />
+            </PositionTwitchSubscriber>
 
             <PositionTwitchFollower>
                 <TwitchFollower />
