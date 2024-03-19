@@ -148,6 +148,8 @@ export default class PubSubService {
     }
 
     handleMessage(event) {
+        let normalizedSubscriber;
+        let subscriberType;
         const message = JSON.parse(event.data);
 
         if (message.type === 'PONG') {
@@ -172,8 +174,8 @@ export default class PubSubService {
             return;
         }
 
-        if (parsedMessage?.data?.status !== 'QUEUED') {
-            console.warn('Ignored not QUEUED message from alerts', message);
+        if (parsedMessage?.data?.status !== 'QUEUED' && parsedMessage?.data?.status !== 'OFFLINE') {
+            console.warn('Ignored not QUEUED or OFFLINE message from alerts', message);
 
             return;
         }
@@ -207,7 +209,7 @@ export default class PubSubService {
             case 'ActivityFeedPrimeSubscriptionAlert':
             case 'ActivityFeedCommunityGiftSubscriptionAlert':
                 // Initialize the common structure with default/missing values
-                let normalizedSubscriber = {
+                normalizedSubscriber = {
                     id: message.data.id,
                     createdAt: message.data.createdAt,
                     updatedAt: message.data.updatedAt,
@@ -218,37 +220,38 @@ export default class PubSubService {
                     streakDuration: null,
                     totalGiftCount: null,
                     quantityPurchased: null,
-                    tier: message.data.tier || "T_1000", // Default tier
+                    tier: message.data.tier || 'T_1000', // Default tier
                 };
 
                 // Identify the message type and extract relevant data
-                let typeName = message.data.__typename;
-                switch (typeName) {
-                    case "ActivityFeedCommunityGiftSubscriptionAlert":
+                subscriberType = message.data.__typename;
+
+                switch (subscriberType) {
+                    case 'ActivityFeedCommunityGiftSubscriptionAlert':
                         normalizedSubscriber.displayName = message.data.gifter.displayName;
-                        normalizedSubscriber.type = "gift";
+                        normalizedSubscriber.type = 'gift';
                         normalizedSubscriber.totalGiftCount = message.data.totalGiftCount;
                         normalizedSubscriber.quantityPurchased = message.data.quantity;
                         break;
 
-                    case "ActivityFeedResubscriptionAlert":
+                    case 'ActivityFeedResubscriptionAlert':
                         normalizedSubscriber.displayName = message.data.subscriber.displayName;
-                        normalizedSubscriber.type = "resub";
+                        normalizedSubscriber.type = 'resub';
                         normalizedSubscriber.subscriptionDuration = message.data.totalDuration;
                         normalizedSubscriber.streakDuration = message.data.streakDuration;
                         break;
 
                     // @TODO This case has not yet been captured!  TEST TEST TEST!
-                    case "ActivityFeedSubscriptionAlert":
+                    case 'ActivityFeedSubscriptionAlert':
                         normalizedSubscriber.displayName = message.data.subscriber.displayName;
-                        normalizedSubscriber.type = "new";
+                        normalizedSubscriber.type = 'new';
                         normalizedSubscriber.subscriptionDuration = message.data.totalDuration;
                         normalizedSubscriber.streakDuration = message.data.streakDuration;
                         break;
 
-                    case "ActivityFeedPrimeSubscriptionAlert":
+                    case 'ActivityFeedPrimeSubscriptionAlert':
                         normalizedSubscriber.displayName = message.data.subscriber.displayName;
-                        normalizedSubscriber.type = "prime";
+                        normalizedSubscriber.type = 'prime';
                         break;
                     // Add cases for other known or anticipated variants
                 }
@@ -256,7 +259,7 @@ export default class PubSubService {
                 if (message.data.messageContent && message.data.messageContent.fragments) {
                     normalizedSubscriber.message = message.data.messageContent.fragments
                         .map(fragment => fragment.text)
-                        .join(" ");
+                        .join(' ');
                 }
 
                 twitchAlertsStore.addEvent({type: 'subscriber', data: normalizedSubscriber});

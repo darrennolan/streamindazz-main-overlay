@@ -40,7 +40,7 @@ function SpotifyNowPlaying({spotifyConfig}) {
 
         // Immediately invoke the check, then set it to repeat every 10 seconds
         getAccessCodeAndFetchNowPlaying();
-        const intervalId = setInterval(getAccessCodeAndFetchNowPlaying, 10000);
+        const intervalId = setInterval(getAccessCodeAndFetchNowPlaying, 60 * 1000);
 
         // Cleanup interval on component unmount
         return () => clearInterval(intervalId);
@@ -58,6 +58,12 @@ function SpotifyNowPlaying({spotifyConfig}) {
             if (response.status === 204) {
                 setSpotifyCurrentlyPlayingData({});
 
+            } else if (response.status === 401) {
+                // Likely access code has expired. Log user out and let them sign back in.
+                console.warn('Spotify 401 response:', response);
+
+                spotifyAuthentication.logout();
+                setIsLoggedIn(false);
             } else {
                 responseData = await response.json();
 

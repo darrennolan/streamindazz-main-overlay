@@ -144,7 +144,7 @@ const TwitchRaid = observer(() => {
                 setAnimationStarted(false);
                 twitchAlertsContext.raid.callback();
             },
-            (fadeOutTime - audioContext.currentTime) * 1000
+            (fadeOutTime - audioContext.currentTime) * 1000,
         ); // Stop the sound after fade
     }
 
@@ -163,14 +163,14 @@ const TwitchRaid = observer(() => {
                 source.current.buffer = audioBuffer;
                 source.current.connect(gainNode);
                 gainNode.connect(audioContext.destination);
-                source.current.start()
+                source.current.start();
             });
 
         // read out raider name + party size
         getVoiceAndSay(`You are being raided by ${twitchAlertsContext.raid.data.raider.displayName}, with an army of ${twitchAlertsContext.raid.data.partySize}!`);
     };
 
-    const onAnimationEnd = (e) => {
+    const onAnimationEnd = () => {
         fadeOut();
     };
 
@@ -204,22 +204,22 @@ const TwitchRaid = observer(() => {
                 onAnimationEnd={onAnimationEnd}
                 $animationLengthInSeconds={animationLengthInSeconds}
                 $terminatorsWidth={terminatorsWidth}>
-                    {Array.from({ length: Math.min(twitchAlertsContext.raid.data.partySize, 500) }).map((_, i) => {
-                        // Random offset to be random number between 300 and 400
-                        const randomLeftOffset = Math.floor(Math.random() * (460 - 300 + 1)) + 300;
+                {Array.from({ length: Math.min(twitchAlertsContext.raid.data.partySize, 500) }).map((_, i) => {
+                    // Random offset to be random number between 300 and 400
+                    const randomLeftOffset = Math.floor(Math.random() * (460 - 300 + 1)) + 300;
 
-                        // Generate 1 or 2 for z index
-                        const randomZIndex = Math.floor(Math.random() * 2) + 1;
-                        const randomBounceSpeed = Math.random() * 1 + 0.5; // generates a random number between 0.5 and 1
+                    // Generate 1 or 2 for z index
+                    const randomZIndex = Math.floor(Math.random() * 2) + 1;
+                    const randomBounceSpeed = Math.random() * 1 + 0.5; // generates a random number between 0.5 and 1
 
-                        return <TerminatorImg key={i} src={terminatorImage} width="480" height="641"
-                            style={{
-                                animationDuration: `${randomBounceSpeed}s`,
-                                marginLeft: `-${randomLeftOffset}px`,
-                                zIndex: randomZIndex
-                            }}
-                             />;
-                    })}
+                    return <TerminatorImg key={i} src={terminatorImage} width="480" height="641"
+                        style={{
+                            animationDuration: `${randomBounceSpeed}s`,
+                            marginLeft: `-${randomLeftOffset}px`,
+                            zIndex: randomZIndex,
+                        }}
+                    />;
+                })}
             </Terminators>
         </RaidContainer>
     );

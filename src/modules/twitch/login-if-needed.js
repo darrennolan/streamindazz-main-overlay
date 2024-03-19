@@ -45,7 +45,7 @@ const LoginIfNeeded = ({twitchConfig}) => {
             if (isAuthed) {
                 clearTimeout(timeoutId);
             }
-        }, 1000)
+        }, 1000);
 
         return () => clearTimeout(timeoutId);
     }, []);

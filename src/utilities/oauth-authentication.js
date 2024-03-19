@@ -22,6 +22,13 @@ export default class OAuthAuthentication {
         this.processCodeFromUrlIfPresent();
     }
 
+    logout() {
+        window.localStorage.removeItem(`${this.localStoragePrefix}access_token`);
+        window.localStorage.removeItem(`${this.localStoragePrefix}refresh_token`);
+        window.localStorage.removeItem(`${this.localStoragePrefix}expires_in`);
+        window.localStorage.removeItem(`${this.localStoragePrefix}expires`);
+    }
+
     get currentAccessToken() { return window.localStorage.getItem(`${this.localStoragePrefix}access_token`) || null; }
     get currentRefreshToken() { return window.localStorage.getItem(`${this.localStoragePrefix}refresh_token`) || null; }
     get currentExpiresIn() { return window.localStorage.getItem(`${this.localStoragePrefix}refresh_in`) || null; }
@@ -154,14 +161,14 @@ export default class OAuthAuthentication {
 
         // If there's no ongoing authPromise, create a new one
         if (!this.accessTokenPromise) {
-
-
             // return false we're not logged in.
 
             // check if we have valid access token, if we do, return it
             if (this.currentAccessToken
                 && this.currentExpires
                 && (this.currentExpires > (currentDate + this.expiresBufferTimeInMs))) {
+
+                console.info('Have token');
 
                 this.accessTokenPromise = new Promise((resolve) => {
                     resolve(this.currentAccessToken);
@@ -173,6 +180,8 @@ export default class OAuthAuthentication {
 
             // check if we have valid refresh token, if we do, refresh access token, then return it
             } else if (this.currentRefreshToken) {
+                console.warn('refreshing');
+
                 this.accessTokenPromise = this.refreshToken()
                     .then((response) => {
                         this.saveTokensFromResponse(response);

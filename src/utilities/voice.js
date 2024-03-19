@@ -8,7 +8,7 @@ export async function getVoiceReady() {
             voiceReady = true;
         };
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const interval = setInterval(() => {
                 if (voiceReady) {
                     clearInterval(interval);
@@ -31,8 +31,8 @@ export async function say(
             'Microsoft David - English (United States)',
             'Google US English',
             'Google UK English Female',
-        ]
-    } = {} // options
+        ],
+    } = {}, // options
 ) {
     return new Promise((resolve, reject) => {
         if (!voiceReady) {
@@ -63,7 +63,7 @@ export async function say(
         utterance.volume = volume; // Set volume
         utterance.rate = rate; // Set speed
 
-        utterance.onend = function(event) {
+        utterance.onend = function() {
             resolve(); // Resolve the promise when the utterance has finished speaking
         };
 
