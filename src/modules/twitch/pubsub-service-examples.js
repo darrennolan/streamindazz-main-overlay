@@ -81,36 +81,32 @@ switch (true) {
         */
         break;
 
-    case '':
-        /* Example ActivityFeedResubscriptionAlert message:  "SundaeLatte • Resubscribed for 1 month at Tier 1. They've been subscribed for 2 months!"
+    case 'ActivityFeedIndividualGiftSubscriptionAlert':
+        /* Example ActivityFeedIndividualGiftSubscriptionAlert queue message: ThisIsMakena • Gifted a 1 Month Tier 1 sub to HaIey8
         {
             "type": "activity_feed_alerts_update",
             "data": {
-                "__typename": "ActivityFeedResubscriptionAlert",
-                "id": "RESUBSCRIPTION:c6c26f40-bdbb-425f-b6c7-ad737b4297ae",
+                "__typename": "ActivityFeedIndividualGiftSubscriptionAlert",
+                "id": "INDIVIDUAL_GIFT_SUBSCRIPTION:34af0507-848e-40db-be79-54fe6c0a738a",
                 "status": "QUEUED",
-                "createdAt": "2024-03-14T05:37:38.205346822Z",
-                "updatedAt": "2024-03-14T23:30:07.860815595Z",
-                "totalDuration": 2,
-                "streakDuration": 0,
+                "createdAt": "2024-03-15T03:02:58.98407632Z",
+                "updatedAt": "2024-03-19T10:52:41.689925301Z",
                 "multiMonthDuration": 1,
-                "messageContent": {
-                    "__typename": "ActivityFeedAlertMessageContent",
-                    "fragments": [
-                        {
-                            "__typename": "ActivityFeedAlertMessageTextFragment",
-                            "text": "Now it shows me this haha"
-                        }
-                    ]
-                },
                 "tier": "T_1000",
-                "subscriber": {
+                "gifter": {
                     "__typename": "User",
-                    "id": "442956044",
-                    "displayName": "SundaeLatte",
-                    "login": "sundaelatte"
+                    "id": "125318454",
+                    "displayName": "ThisIsMakena",
+                    "login": "thisismakena"
                 },
-                "viewerCustomizationSelection": null
+                "recipient": {
+                    "__typename": "User",
+                    "id": "261454369",
+                    "displayName": "HaIey8",
+                    "login": "haiey8"
+                },
+                "isAnonymous": false,
+                "totalGiftCount": 1
             }
         }
         */

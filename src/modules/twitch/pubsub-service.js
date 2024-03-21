@@ -148,9 +148,8 @@ export default class PubSubService {
     }
 
     handleMessage(event) {
-        let normalizedSubscriber;
-        let subscriberType;
         const message = JSON.parse(event.data);
+        let normalizedSubscriber, subscriber;
 
         if (message.type === 'PONG') {
             return;
@@ -207,59 +206,51 @@ export default class PubSubService {
 
             case 'ActivityFeedResubscriptionAlert':
             case 'ActivityFeedPrimeSubscriptionAlert':
+            case 'ActivityFeedIndividualGiftSubscriptionAlert':
             case 'ActivityFeedCommunityGiftSubscriptionAlert':
+            case 'ActivityFeedSubscriptionAlert':
                 // Initialize the common structure with default/missing values
                 normalizedSubscriber = {
-                    id: message.data.id,
-                    createdAt: message.data.createdAt,
-                    updatedAt: message.data.updatedAt,
-                    displayName: null,
-                    type: null,
-                    message: null,
-                    subscriptionDuration: null,
-                    streakDuration: null,
-                    totalGiftCount: null,
-                    quantityPurchased: null,
-                    tier: message.data.tier || 'T_1000', // Default tier
+                    alertType: '',
+                    subscriberId: '',
+                    subscriberName: '',
+                    subscriptionTier: '',
+                    multiMonthDuration: 0,
+                    totalDuration: 0,
+                    streakDuration: 0,
+                    giftRecipientId: null,
+                    giftRecipientName: null,
+                    isAnonymous: false,
+                    totalGiftCount: 0,
+                    message: '',
                 };
 
-                // Identify the message type and extract relevant data
-                subscriberType = message.data.__typename;
+                normalizedSubscriber.alertType = parsedMessage.data.__typename.replace('ActivityFeed', '').replace('Alert', '').toLowerCase();
+                normalizedSubscriber.subscriptionTier = parsedMessage.data.tier || 'T_1000';
+                normalizedSubscriber.multiMonthDuration = parsedMessage.data.multiMonthDuration || 0;
 
-                switch (subscriberType) {
-                    case 'ActivityFeedCommunityGiftSubscriptionAlert':
-                        normalizedSubscriber.displayName = message.data.gifter.displayName;
-                        normalizedSubscriber.type = 'gift';
-                        normalizedSubscriber.totalGiftCount = message.data.totalGiftCount;
-                        normalizedSubscriber.quantityPurchased = message.data.quantity;
-                        break;
+                subscriber = parsedMessage.data.subscriber || parsedMessage.data.gifter;
 
-                    case 'ActivityFeedResubscriptionAlert':
-                        normalizedSubscriber.displayName = message.data.subscriber.displayName;
-                        normalizedSubscriber.type = 'resub';
-                        normalizedSubscriber.subscriptionDuration = message.data.totalDuration;
-                        normalizedSubscriber.streakDuration = message.data.streakDuration;
-                        break;
-
-                    // @TODO This case has not yet been captured!  TEST TEST TEST!
-                    case 'ActivityFeedSubscriptionAlert':
-                        normalizedSubscriber.displayName = message.data.subscriber.displayName;
-                        normalizedSubscriber.type = 'new';
-                        normalizedSubscriber.subscriptionDuration = message.data.totalDuration;
-                        normalizedSubscriber.streakDuration = message.data.streakDuration;
-                        break;
-
-                    case 'ActivityFeedPrimeSubscriptionAlert':
-                        normalizedSubscriber.displayName = message.data.subscriber.displayName;
-                        normalizedSubscriber.type = 'prime';
-                        break;
-                    // Add cases for other known or anticipated variants
+                if (subscriber) {
+                    normalizedSubscriber.subscriberId = subscriber.id;
+                    normalizedSubscriber.subscriberName = subscriber.displayName;
                 }
 
-                if (message.data.messageContent && message.data.messageContent.fragments) {
-                    normalizedSubscriber.message = message.data.messageContent.fragments
-                        .map(fragment => fragment.text)
-                        .join(' ');
+                if (parsedMessage.data.__typename.includes('Resubscription')) {
+                    normalizedSubscriber.totalDuration = parsedMessage.data.totalDuration;
+                    normalizedSubscriber.streakDuration = parsedMessage.data.streakDuration;
+                }
+
+                if (parsedMessage.data.recipient) {
+                    normalizedSubscriber.giftRecipientId = parsedMessage.data.recipient.id;
+                    normalizedSubscriber.giftRecipientName = parsedMessage.data.recipient.displayName;
+                }
+
+                normalizedSubscriber.isAnonymous = !!parsedMessage.data.isAnonymous;
+                normalizedSubscriber.totalGiftCount = parsedMessage.data.totalGiftCount || 0;
+
+                if (parsedMessage.data.messageContent && parsedMessage.data.messageContent.fragments) {
+                    normalizedSubscriber.message = parsedMessage.data.messageContent.fragments.map(fragment => fragment.text).join(' ');
                 }
 
                 twitchAlertsStore.addEvent({type: 'subscriber', data: normalizedSubscriber});
