@@ -5,6 +5,7 @@ import { TwitchAlertsContext } from '../alerts-store';
 
 import { getVoiceAndSay } from '../../../utilities/voice';
 import soundEffect from '../../../sounds/smash-bros/smash-bros-ultimate-super-smash-bros-ultimate-a-new-foe-has-appeared-sound-effect.mp3';
+import backgroundImage from '../../../images/abstract-background/minified.jpg';
 
 const fadeIn = keyframes`
     from {
@@ -30,16 +31,40 @@ const SubscribeContainer = styled.div`
     top: 0; left: 0; right: 0; bottom: 0;
     background: black;
 
-    animation: ${fadeIn} 0.5s ease-in-out, ${fadeOut} 0.5s ease-in-out 10s;
+    animation: ${fadeIn} 0.5s ease-in-out, ${fadeOut} 0.5s ease-in-out 20s;
+`;
+
+const StyledBackgroundContainer = styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    width: 150%;
+    height: 75%;
+
+    transform: rotate(-3deg) translate(-50%, -50%) scale(1.5);
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at center, transparent, rgba(0, 0, 0, 0.99));
+    }
+`;
+
+const StyledBackgroundImage = styled.img`
+    width: 100%;
+    height: 100%;
 `;
 
 const TwitchSubscriber = observer(() => {
     const twitchAlertsContext = useContext(TwitchAlertsContext);
-    const [animationEnded, setAnimationEnded] = useState(false);
-
-    console.log(twitchAlertsContext.subscriber);
-
     const subscriberData = twitchAlertsContext.subscriber?.data;
+
+    const [animationEnded, setAnimationEnded] = useState(false);
     const audioEffect = new Audio(soundEffect);
 
     const onAnimationStart = (e) => {
@@ -49,25 +74,6 @@ const TwitchSubscriber = observer(() => {
     };
 
     const onAnimationEnd = (e) => {
-        if (e.animationName === fadeIn.name) {
-            const displayName = subscriberData.subscriber.displayName;
-            const totalDuration = subscriberData.totalDuration;
-            const messageContent = subscriberData.messageContent.fragments.map(fragment => fragment.text).join(' ');
-
-            // Construct the message
-            let message = `A new subscriber has appeared! Welcome ${displayName}. `;
-
-            if (totalDuration > 1) {
-                message += `This is your ${totalDuration} month of subscription. `;
-            }
-
-            if (messageContent) {
-                message += `They said: ${messageContent}`;
-            }
-
-            getVoiceAndSay(message);
-        }
-
         if (e.animationName === fadeOut.name) {
             setAnimationEnded(true);
         }
@@ -86,12 +92,16 @@ const TwitchSubscriber = observer(() => {
 
     return (
         <SubscribeContainer key={`${twitchAlertsContext.subscriber.data.id}-${twitchAlertsContext.subscriber.data.updatedAt}`} onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd}>
-            <p>
+            <StyledBackgroundContainer>
+                <StyledBackgroundImage src={backgroundImage} />
+            </StyledBackgroundContainer>
+
+            {/* <p>
                 A new subscriber has appeared!
             </p>
             <p>
-                ${subscriberData.totalDuration > 1 ? `Welcome ${subscriberData.subscriber.displayName}` : `<bold>${subscriberData.subscriber.displayName}</bold> for ${subscriberData.totalDuration} months!`}
-            </p>
+                ${subscriberData.totalDuration > 1 ? `Welcome ${subscriberData.subscriber?.displayName}` : `<bold>${subscriberData.subscriber.displayName}</bold> for ${subscriberData.totalDuration} months!`}
+            </p> */}
         </SubscribeContainer>
     );
 });

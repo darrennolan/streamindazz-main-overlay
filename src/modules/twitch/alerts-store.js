@@ -13,6 +13,7 @@ export class TwitchAlertsStoreClass {
         makeObservable(this, {
             follower: observable,
             raid: observable,
+            subscriber: observable,
         });
     }
 
@@ -35,6 +36,8 @@ export class TwitchAlertsStoreClass {
     }
 
     handleEvent(event) {
+        console.log('new event', event);
+
         switch (event.type) {
             case 'new-follower':
                 runInAction(() => {
@@ -63,6 +66,8 @@ export class TwitchAlertsStoreClass {
                 break;
 
             case 'subscriber':
+                console.log('Subscriber event:', event);
+
                 runInAction(() => {
                     this.subscriber = {
                         data: event.data,

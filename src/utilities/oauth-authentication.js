@@ -168,8 +168,6 @@ export default class OAuthAuthentication {
                 && this.currentExpires
                 && (this.currentExpires > (currentDate + this.expiresBufferTimeInMs))) {
 
-                console.info('Have token');
-
                 this.accessTokenPromise = new Promise((resolve) => {
                     resolve(this.currentAccessToken);
                 })
@@ -180,7 +178,7 @@ export default class OAuthAuthentication {
 
             // check if we have valid refresh token, if we do, refresh access token, then return it
             } else if (this.currentRefreshToken) {
-                console.warn('refreshing');
+                console.info('oauth refreshing');
 
                 this.accessTokenPromise = this.refreshToken()
                     .then((response) => {
