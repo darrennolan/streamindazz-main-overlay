@@ -178,8 +178,6 @@ export default class OAuthAuthentication {
 
             // check if we have valid refresh token, if we do, refresh access token, then return it
             } else if (this.currentRefreshToken) {
-                console.info('oauth refreshing');
-
                 this.accessTokenPromise = this.refreshToken()
                     .then((response) => {
                         this.saveTokensFromResponse(response);

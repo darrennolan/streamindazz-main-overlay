@@ -36,8 +36,6 @@ export class TwitchAlertsStoreClass {
     }
 
     handleEvent(event) {
-        console.log('new event', event);
-
         switch (event.type) {
             case 'new-follower':
                 runInAction(() => {

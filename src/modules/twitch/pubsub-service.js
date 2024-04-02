@@ -210,6 +210,8 @@ export default class PubSubService {
             case 'ActivityFeedIndividualGiftSubscriptionAlert':
             case 'ActivityFeedCommunityGiftSubscriptionAlert':
             case 'ActivityFeedSubscriptionAlert':
+                console.log('parsed Message', parsedMessage);
+
                 // Initialize the common structure with default/missing values
                 normalizedSubscriber = {
                     alertType: '',
