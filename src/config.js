@@ -17,6 +17,16 @@ const config = {
     twitch: {
         clientId: process.env.TWITCH_CLIENT_ID,
     },
+
+    ibm:{
+        apikey: process.env.IBM_APIKEY,
+        iamApikeyDescription: process.env.IBM_IAM_APIKEY_DESCRIPTION,
+        iamApikeyId: process.env.IBM_IAM_APIKEY_ID,
+        iamApikeyName: process.env.IBM_IAM_APIKEY_NAME,
+        iamRoleCrn: process.env.IBM_IAM_ROLE_CRN,
+        iamServiceid_crn: process.env.IBM_IAM_SERVICEID_CRN,
+        url: process.env.IBM_URL,
+    },
 };
 
 export default config;

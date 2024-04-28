@@ -17,7 +17,7 @@ export default class PubSubService {
         this.twitchConfig = twitchConfig;
         this.authentication = getAuthenticationSingleton(this.twitchConfig);
 
-        if (config.useDeveloperScale) {
+        if (true || config.useDeveloperScale) {
             window.test = {
                 follower: (name = 'StreaminDazz') => {
                     twitchAlertsStore.addEvent({

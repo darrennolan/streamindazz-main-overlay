@@ -1,6 +1,9 @@
+import config from '../config';
+import {TextToSpeech} from 'watson-speech';
+
 let voiceReady = false;
 
-export async function getVoiceReady() {
+export async function getNativeVoiceReady() {
     if (voiceReady) {
         return true;
     } else {
@@ -21,7 +24,7 @@ export async function getVoiceReady() {
 
 new SpeechSynthesisUtterance(`Loading voices on page boot`); // don't stress, we don't ask it to talk.
 
-export async function say(
+export async function nativeSay(
     message = '',
     {
         rate = 1.0,
@@ -71,8 +74,31 @@ export async function say(
     });
 }
 
-export async function getVoiceAndSay(message, options) {
-    await getVoiceReady();
+export async function ibmSay(message) {
+    const response = await fetch(`${config.ibm.url}/v1/synthesize?voice=en-US_MichaelV3Voice`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'audio/wav',
+            Authorization: `Basic ${btoa(`apikey:${config.ibm.iamApikeyId}`)}`,
+        },
+        body: JSON.stringify({message}),
+    });
 
-    return say(message, options);
+    if (!response.ok) throw new Error(`unexpected response ${response.statusText}`);
+
+    const blob = await response.blob();
+    const objectURL = URL.createObjectURL(blob);
+
+    const audio = new Audio(objectURL);
+
+    return audio.play();
+}
+
+export async function getVoiceAndSay(message, options) {
+    // return ibmSay(message);
+
+    await getNativeVoiceReady();
+
+    return nativeSay(message, options);
 }
