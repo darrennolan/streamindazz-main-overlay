@@ -15,7 +15,7 @@ export default function developerScale() {
         appContent.style.transform = `scale(${scaleFactor})`;
     }
 
-    if (config.useDeveloperScale) {
+    if (config.useDeveloperScale && !window.obsstudio) {
         aspectContainer.classList.add('dev');
         appContent.classList.add('dev');
 

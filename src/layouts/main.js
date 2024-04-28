@@ -65,7 +65,7 @@ const MainLayout = ({
                 <TwitchLoginIfNeeded twitchConfig={config.twitch} />
             </PositionTwitchLoginIfNeeded>
 
-            <PositionTwitchSubscriber>
+            {/* <PositionTwitchSubscriber>
                 <TwitchSubscriber twitchConfig={config.twitch} />
             </PositionTwitchSubscriber>
 
@@ -75,7 +75,7 @@ const MainLayout = ({
 
             <PositionTwitchRaid>
                 <TwitchRaid />
-            </PositionTwitchRaid>
+            </PositionTwitchRaid> */}
 
             <PositionSpotifyNowPlaying>
                 <SpotifyNowPlaying spotifyConfig={config.spotify} />

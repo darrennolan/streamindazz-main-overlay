@@ -30,7 +30,7 @@ bootApp();
 
 // @TODO after you fix the twitch auth class to use auth promise, you don't need to wait.
 setTimeout(() => {
-    window.test.follower('StreaminDazz');
+    // window.test.follower('StreaminDazz');
     // window.test.raid('StreaminDazz', 14);
     // window.test.raid('StreaminDazz', 513531);
     // window.test.subscriberNew();
