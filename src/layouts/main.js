@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import config from '../config';
+// import config from '../config';
 import backgroundImage from '../images/dev-background.jpg';
 
 import SpotifyNowPlaying from '../modules/spotify/now-playing';
@@ -46,13 +46,13 @@ const PositionSpotifyNowPlaying = styled.div`
     bottom: 20px;
 `;
 
-const StyledStreamerName = styled.p`
-    position: absolute;
-    right: 0px;
-    bottom: 0px;
-    color: ${config.themeBackgroundColor};
-    text-shadow: 2px 2px 2px ${config.themeForegroundShadowColor};
-`;
+// const StyledStreamerName = styled.p`
+//     position: absolute;
+//     right: 0px;
+//     bottom: 0px;
+//     color: ${config.themeBackgroundColor};
+//     text-shadow: 2px 2px 2px ${config.themeForegroundShadowColor};
+// `;
 
 const MainLayout = ({
     config = {},
@@ -81,9 +81,9 @@ const MainLayout = ({
                 <SpotifyNowPlaying spotifyConfig={config.spotify} />
             </PositionSpotifyNowPlaying>
 
-            <StyledStreamerName>
+            {/* <StyledStreamerName>
                 {config.streamerName}
-            </StyledStreamerName>
+            </StyledStreamerName> */}
         </ContainerToUse>
     );
 };
