@@ -2,20 +2,25 @@ import OAuthAuthentication from '../../utilities/oauth-authentication';
 
 class TwitchAuthentication extends OAuthAuthentication {
     lastVerified = null;
+    scopes = [];
 
     constructor(config) {
+        const scopes = [
+            'moderator:read:followers',
+            'channel:read:subscriptions',
+        ];
+
         super({
             ...config,
             authorizationEndpoint: 'https://id.twitch.tv/oauth2/authorize',
             tokenEndpoint: 'https://id.twitch.tv/oauth2/token',
             useCodeChallenge: false,
             responseType: 'token',
-            scope: [
-                'moderator:read:followers',
-                'channel:read:subscriptions',
-            ].join(' '),
+            scope: scopes.join(' '),
             localStoragePrefix: 'twitch_',
         });
+
+        this.scopes = scopes;
 
         // This only happens on a page refresh. If there's not 12 hours remaining in the expiry,
         // we'll remove the expiry and force a re-authentication.
@@ -44,6 +49,10 @@ class TwitchAuthentication extends OAuthAuthentication {
         window.localStorage.removeItem(`${this.localStoragePrefix}login`);
     }
 
+    getScopes() {
+        return this.scopes;
+    }
+
     async processCodeFromUrlIfPresent() {
         const codeVerifier = window.localStorage.getItem(`${this.localStoragePrefix}code_verifier`);
         const url = new URL(window.location.href);
@@ -68,6 +77,15 @@ class TwitchAuthentication extends OAuthAuthentication {
                     }
                 });
         }
+    }
+
+    async getTwurpleAccessToken() {
+        const accessToken = await this.getAccessToken();
+
+        return {
+            ...this.fullAccessToken,
+            accessToken,
+        };
     }
 
     async getAccessToken() {
@@ -115,6 +133,8 @@ class TwitchAuthentication extends OAuthAuthentication {
             window.localStorage.setItem(`${this.localStoragePrefix}expires`, expiryDate);
             window.localStorage.setItem(`${this.localStoragePrefix}user_id`, data.user_id);
             window.localStorage.setItem(`${this.localStoragePrefix}login`, data.login);
+
+            this.fullAccessToken = data;
 
             return true;
         } else {

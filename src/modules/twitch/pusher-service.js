@@ -1,7 +1,13 @@
-export default class PusherService {
-    pusherConfig = null;
+import Pusher from 'pusher-js';
 
-    constructor({pusherConfig}) {
-        this.pusherConfig = pusherConfig;
+export default class PusherService {
+    pusher = null;
+
+    constructor({pusherConfig, streamerName}) {
+        this.pusher = new Pusher({
+            key: pusherConfig.key,
+            cluster: pusherConfig.cluster,
+            useTLS: true,
+        });
     }
 }

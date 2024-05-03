@@ -6,7 +6,7 @@ import { getVoiceAndSay } from '../../../utilities/voice';
 
 import soundWhoosh from '../../../sounds/whoosh/whoosh.mp3';
 import soundPunch from '../../../sounds/punch/heavy-face-punch.mp3';
-import soundCartoonHorn from '../../../sounds/cartoon-horn/cartoon-horn.mp3';
+// import soundCartoonHorn from '../../../sounds/cartoon-horn/cartoon-horn.mp3';
 
 const slideInLeft = keyframes`
     0% { transform: translateX(-150%); }
@@ -119,7 +119,7 @@ const TwitchFollower = observer(() => {
         if (e.animationName === slideInLeft.name) {
             audioPunch.play();
             // audioCartoonHorn.play();
-            getVoiceAndSay(`${twitchAlertsContext.follower.data.follower.displayName} just followed!`);
+            getVoiceAndSay(`${twitchAlertsContext.follower.data.displayName} just followed!`);
         }
 
         if (e.animationName === slideOutRight.name) {
@@ -145,7 +145,7 @@ const TwitchFollower = observer(() => {
             <TextContainer>
                 <Text>
                     NEW FOLLOWER!<br />
-                    <TextUsername>{twitchAlertsContext.follower.data.follower.displayName}</TextUsername>
+                    <TextUsername>{twitchAlertsContext.follower.data.displayName}</TextUsername>
                 </Text>
             </TextContainer>
         </FollowerContainer>

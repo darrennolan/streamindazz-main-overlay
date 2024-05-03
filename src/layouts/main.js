@@ -62,16 +62,16 @@ const MainLayout = ({
     return (
         <ContainerToUse>
             <PositionTwitchLoginIfNeeded>
-                <TwitchLoginIfNeeded twitchConfig={config.twitch} />
+                <TwitchLoginIfNeeded twitchConfig={config.twitch} pusherConfig={config.pusher} />
             </PositionTwitchLoginIfNeeded>
-
-            <PositionTwitchSubscriber>
-                <TwitchSubscriber twitchConfig={config.twitch} />
-            </PositionTwitchSubscriber>
 
             <PositionTwitchFollower>
                 <TwitchFollower />
             </PositionTwitchFollower>
+
+            <PositionTwitchSubscriber>
+                <TwitchSubscriber twitchConfig={config.twitch} />
+            </PositionTwitchSubscriber>
 
             <PositionTwitchRaid>
                 <TwitchRaid />

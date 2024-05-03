@@ -23,6 +23,8 @@ const config = {
         cluster: process.env.PUSHER_CLUSTER,
         appId: process.env.PUSHER_APP_ID,
         secret: process.env.PUSHER_SECRET,
+
+        twitchUserId: process.env.PUSHER_TWITCH_USER_ID,
     },
 
     ibm:{

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import getTwitchAuthentication from './authentication';
-import WebSocketService from './websocket-service';
-import PubSubService from './pubsub-service';
+
+import getWebSocketServices from './websocket-services';
+// import WebSocketService from './websocket-service';
+// import PubSubService from './pubsub-service';
 
 const LoginButton = styled.button`
   background-color: #6441A4; /* twitch purple */
@@ -15,10 +17,12 @@ const LoginButton = styled.button`
   cursor: pointer;
 `;
 
-const LoginIfNeeded = ({twitchConfig}) => {
+const LoginIfNeeded = ({twitchConfig, pusherConfig}) => {
     const twitchAuthentication = getTwitchAuthentication(twitchConfig);
-    const webSocketService = new WebSocketService({twitchConfig});
-    const pubSubService = new PubSubService({twitchConfig});
+    const webSocketServices = getWebSocketServices({twitchConfig, pusherConfig});
+
+    // const webSocketService = new WebSocketService({twitchConfig});
+    // const pubSubService = new PubSubService({twitchConfig});
 
     const [hasRunOnce, setHasRunOnce] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +35,9 @@ const LoginIfNeeded = ({twitchConfig}) => {
         setHasRunOnce(true);
 
         if (accessToken) {
-            webSocketService.connect();
-            pubSubService.connect();
+            webSocketServices.connect();
+            // webSocketService.connect();
+            // pubSubService.connect();
         }
 
         return !!accessToken;
@@ -72,6 +77,7 @@ const LoginIfNeeded = ({twitchConfig}) => {
 
 LoginIfNeeded.propTypes = {
     twitchConfig: PropTypes.object.isRequired,
+    pusherConfig: PropTypes.object.isRequired,
 };
 
 export default LoginIfNeeded;

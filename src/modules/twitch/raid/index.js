@@ -167,7 +167,7 @@ const TwitchRaid = observer(() => {
             });
 
         // read out raider name + party size
-        getVoiceAndSay(`You are being raided by ${twitchAlertsContext.raid.data.raider.displayName}, with an army of ${twitchAlertsContext.raid.data.partySize}!`);
+        getVoiceAndSay(`You are being raided by ${twitchAlertsContext.raid.data.displayName}, with an army of ${twitchAlertsContext.raid.data.viewers}!`);
     };
 
     const onAnimationEnd = () => {
@@ -178,22 +178,22 @@ const TwitchRaid = observer(() => {
         if (terminatorsRef.current) {
             setTerminatorsWidth(terminatorsRef.current.offsetWidth);
         }
-    }, [terminatorsRef.current, twitchAlertsContext?.raid?.data?.partySize]);
+    }, [terminatorsRef.current, twitchAlertsContext?.raid?.data?.viewers]);
 
     if (!twitchAlertsContext.raid) {
         return null;
     }
 
     // If more than 100 raiders, animation length is 30 seconds. If less, 15;
-    const animationLengthInSeconds = twitchAlertsContext.raid.data.partySize >= 100 ? 30 : 15;
+    const animationLengthInSeconds = twitchAlertsContext.raid.data.viewers >= 100 ? 30 : 15;
 
     return (
         <RaidContainer key={twitchAlertsContext.raid.data.id + twitchAlertsContext.raid.data.updatedAt}>
             <TextContainer $animationLengthInSeconds={animationLengthInSeconds}>
 
                 INCOMING RAID<br />
-                <TextUsername><strong>{twitchAlertsContext.raid.data.raider.displayName}</strong></TextUsername><br />
-                Army of {numeral(twitchAlertsContext.raid.data.partySize).format('0,0')}<br />
+                <TextUsername><strong>{twitchAlertsContext.raid.data.displayName}</strong></TextUsername><br />
+                Army of {numeral(twitchAlertsContext.raid.data.viewers).format('0,0')}<br />
 
             </TextContainer>
 
@@ -204,7 +204,7 @@ const TwitchRaid = observer(() => {
                 onAnimationEnd={onAnimationEnd}
                 $animationLengthInSeconds={animationLengthInSeconds}
                 $terminatorsWidth={terminatorsWidth}>
-                {Array.from({ length: Math.min(twitchAlertsContext.raid.data.partySize, 500) }).map((_, i) => {
+                {Array.from({ length: Math.min(twitchAlertsContext.raid.data.viewers, 500) }).map((_, i) => {
                     // Random offset to be random number between 300 and 400
                     const randomLeftOffset = Math.floor(Math.random() * (460 - 300 + 1)) + 300;
 
