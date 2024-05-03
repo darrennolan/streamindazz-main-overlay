@@ -40,7 +40,7 @@ function SpotifyNowPlaying({spotifyConfig}) {
 
         // Immediately invoke the check, then set it to repeat every 10 seconds
         getAccessCodeAndFetchNowPlaying();
-        const intervalId = setInterval(getAccessCodeAndFetchNowPlaying, 60 * 1000);
+        const intervalId = setInterval(getAccessCodeAndFetchNowPlaying, 15 * 1000);
 
         // Cleanup interval on component unmount
         return () => clearInterval(intervalId);

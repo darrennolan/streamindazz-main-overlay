@@ -57,7 +57,7 @@ const PositionSpotifyNowPlaying = styled.div`
 const MainLayout = ({
     config = {},
 } = {}) => {
-    const ContainerToUse = config.useDeveloperScale ? DevContainer : Container;
+    const ContainerToUse = (config.useDeveloperScale && !window.obsstudio) ? DevContainer : Container;
 
     return (
         <ContainerToUse>
@@ -65,7 +65,7 @@ const MainLayout = ({
                 <TwitchLoginIfNeeded twitchConfig={config.twitch} />
             </PositionTwitchLoginIfNeeded>
 
-            {/* <PositionTwitchSubscriber>
+            <PositionTwitchSubscriber>
                 <TwitchSubscriber twitchConfig={config.twitch} />
             </PositionTwitchSubscriber>
 
@@ -75,7 +75,7 @@ const MainLayout = ({
 
             <PositionTwitchRaid>
                 <TwitchRaid />
-            </PositionTwitchRaid> */}
+            </PositionTwitchRaid>
 
             <PositionSpotifyNowPlaying>
                 <SpotifyNowPlaying spotifyConfig={config.spotify} />

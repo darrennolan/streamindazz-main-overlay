@@ -18,6 +18,13 @@ const config = {
         clientId: process.env.TWITCH_CLIENT_ID,
     },
 
+    pusher: {
+        key: process.env.PUSHER_KEY,
+        cluster: process.env.PUSHER_CLUSTER,
+        appId: process.env.PUSHER_APP_ID,
+        secret: process.env.PUSHER_SECRET,
+    },
+
     ibm:{
         apikey: process.env.IBM_APIKEY,
         iamApikeyDescription: process.env.IBM_IAM_APIKEY_DESCRIPTION,

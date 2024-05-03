@@ -7,8 +7,6 @@ export default class PubSubService {
     processing = false;
     ws = null;
     twitchConfig = null;
-    subscriptionsMade = false;
-
     intervalTimerId = null;
 
     constructor({twitchConfig}) {
@@ -18,8 +16,81 @@ export default class PubSubService {
         this.authentication = getAuthenticationSingleton(this.twitchConfig);
 
         if (config.useDeveloperScale && !window.obsstudio) {
-            // So this is where we can shove some dev tooling.
-            console.warn('Developer mode, not inside of OBS');
+            window.test = {
+                follower: (name = 'StreaminDazz') => {
+                    twitchAlertsStore.addEvent({
+                        type: 'new-follower',
+                        data: {
+                            __typename: 'ActivityFeedFollowAlert',
+                            id: 'FOLLOW:63c9f63e-14ca-4f2f-b281-2ef6a99c4612',
+                            status: 'QUEUED',
+                            createdAt: '2024-02-29T00:39:03.582913311Z',
+                            updatedAt: '2024-03-03T13:35:28.89972706Z',
+                            follower: {
+                                __typename: 'User',
+                                id: '1010958187',
+                                displayName: name,
+                                login: name.toLowerCase(),
+                            },
+                        },
+                    });
+
+                    return true;
+                },
+
+                raid: (name = 'StreaminDazz', partySize = 22) => {
+                    twitchAlertsStore.addEvent({
+                        type: 'raid',
+                        data: {
+                            __typename: 'ActivityFeedRaidAlert',
+                            id: 'RAID:c5ad1ff7-ae05-426a-9704-a35af9d26838',
+                            status: 'QUEUED',
+                            createdAt: '2024-02-12T04:02:35.078603796Z',
+                            updatedAt: '2024-03-05T06:57:08.974414177Z',
+                            raider: {
+                                __typename: 'User',
+                                id: '67279243',
+                                displayName: name,
+                                login: name.toLowerCase(),
+                            },
+                            partySize: partySize,
+                        },
+                    });
+
+                    return true;
+                },
+
+                subscriberNew: (
+                    name = 'StreaminDazz',
+                    type = 'new',
+                    message = 'Yay new sub',
+                    streakDuration = 1,
+                    totalDuration = 1,
+                    totalGiftCount = 0,
+                    quantityPurchased = 1,
+                    tier = 'T_1000' ,
+                ) => {
+                    twitchAlertsStore.addEvent({
+                        type: 'subscriber',
+                        data: {
+                            alertType: type,
+                            subscriberId: 'sdfsdfds',
+                            subscriberName: name,
+                            subscriptionTier: tier,
+                            multiMonthDuration: 0,
+                            totalDuration: totalDuration,
+                            streakDuration: streakDuration,
+                            giftRecipientId: null,
+                            giftRecipientName: null,
+                            isAnonymous: false,
+                            totalGiftCount: totalGiftCount,
+                            message,
+                        },
+                    });
+
+                    return true;
+                },
+            };
         }
     }
 
