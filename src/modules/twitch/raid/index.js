@@ -167,7 +167,7 @@ const TwitchRaid = observer(() => {
             });
 
         // read out raider name + party size
-        getVoiceAndSay(`You are being raided by ${twitchAlertsContext.raid.data.displayName}, with an army of ${twitchAlertsContext.raid.data.viewers}!`);
+        getVoiceAndSay(`Incoming raid by ${twitchAlertsContext.raid.data.displayName}, with an army of ${twitchAlertsContext.raid.data.viewers}!`);
     };
 
     const onAnimationEnd = () => {

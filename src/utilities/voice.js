@@ -1,5 +1,4 @@
 import config from '../config';
-import {TextToSpeech} from 'watson-speech';
 
 let voiceReady = false;
 
@@ -75,14 +74,13 @@ export async function nativeSay(
 }
 
 export async function ibmSay(message) {
-    const response = await fetch(`${config.ibm.url}/v1/synthesize?voice=en-US_MichaelV3Voice`, {
+    const response = await fetch(`http://localhost:12345/tts`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Accept: 'audio/wav',
-            Authorization: `Basic ${btoa(`apikey:${config.ibm.iamApikeyId}`)}`,
+            Accept: 'audio/mp3',
         },
-        body: JSON.stringify({message}),
+        body: JSON.stringify({say: message}),
     });
 
     if (!response.ok) throw new Error(`unexpected response ${response.statusText}`);
@@ -96,9 +94,13 @@ export async function ibmSay(message) {
 }
 
 export async function getVoiceAndSay(message, options) {
-    // return ibmSay(message);
+    if (window.obsstudio) {
+        // If OBS - use watson to say this.
+        return ibmSay(message);
+    } else {
+        // Otherwise, use the native browser to say it.
+        await getNativeVoiceReady();
 
-    await getNativeVoiceReady();
-
-    return nativeSay(message, options);
+        return nativeSay(message, options);
+    }
 }

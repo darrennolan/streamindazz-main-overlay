@@ -156,8 +156,24 @@ const TwitchSubscriber = observer(() => {
         return null;
     }
 
+    let mainLine = '';
+    let subLine = '';
+
+    if (subscriberData.isGift) {
+        if (subscriberData.isAnonymous) {
+            mainLine = `Anonymous gifted a sub`;
+        } else {
+
+        }
+        mainLine = `${subscriberData.gifterDisplayName} gifted a sub`;
+        subLine = `Tier ${subscriberData.subPlan} sub`;
+    } else {
+        mainLine = subscriberData.userDisplayName;
+        subLine = subscriberData.cumulativeMonths >= 1 ? `Welcome!` : `For ${subscriberData.cumulativeMonths} Months!`;
+    }
+
     return (
-        <SubscribeContainer key={`${twitchAlertsContext.subscriber.data.id}-${twitchAlertsContext.subscriber.data.updatedAt}`} onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd}>
+        <SubscribeContainer key={`${twitchAlertsContext.subscriber.data.userId}-${twitchAlertsContext.subscriber.data.time.toISOString()}`} onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd}>
             <StyledBackgroundContainer>
                 <StyledBackgroundImage src={backgroundImage} />
             </StyledBackgroundContainer>
@@ -165,11 +181,11 @@ const TwitchSubscriber = observer(() => {
 
             <StyledNewSubDetailsContainer>
                 <StyledNewSubName>
-                    {subscriberData.subscriberName}
+                    {mainLine}
                 </StyledNewSubName>
 
                 <StyleNewSubDetailsTextDetail>
-                    {subscriberData.totalDuration >= 1 ? `Welcome!` : `For ${subscriberData.totalDuration} Months!`}
+                    {subLine}
                 </StyleNewSubDetailsTextDetail>
             </StyledNewSubDetailsContainer>
 
