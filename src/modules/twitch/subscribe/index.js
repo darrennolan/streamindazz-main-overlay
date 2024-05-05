@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
-import styled, {keyframes, ifProp, css} from 'styled-components';
+import styled, {keyframes, css} from 'styled-components';
 import {observer} from 'mobx-react';
 import {TwitchAlertsContext} from '../alerts-store';
 
@@ -7,6 +7,49 @@ import {getVoiceAndSay} from '../../../utilities/voice';
 import soundEffectMp3 from '../../../sounds/smash-bros/smash-bros-ultimate-super-smash-bros-ultimate-a-new-foe-has-appeared-sound-effect.mp3';
 import backgroundImage from '../../../images/abstract-background/minified.jpg';
 import ralphSilhouetteImage from '../../../images/ralph/silhouette.png';
+
+const shakeAnimation = keyframes`
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+`;
+
+const popInAnimation = keyframes`
+    0% {
+        transform: scale(5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+`;
+
+const glideRightAnimation = keyframes`
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(8%);
+    }
+`;
+
+const glideLeftAnimation = keyframes`
+    0% {
+        transform: translateX(0) translateY(50%);
+    }
+    100% {
+        transform: translateX(-16%) translateY(50%);
+    }
+`;
 
 const fadeInAnimation = keyframes`
     from {
@@ -34,10 +77,16 @@ const SubscribeContainer = styled.div`
     color: white;
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: black;
+    // background: black;
 
     opacity: ${props => props.$fadeOut ? 0 : 1};
     animation: ${theAnimation};
+`;
+
+const StyledShakeContainer = styled.div`
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    animation: ${shakeAnimation} 0.5s ease-in-out 0.5s;
 `;
 
 const StyledBackgroundContainer = styled.div`
@@ -48,7 +97,7 @@ const StyledBackgroundContainer = styled.div`
     width: 150%;
     height: 80%;
 
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) skew(36deg) rotate(-3deg);
 
     &::after, &::before {
         content: "";
@@ -82,6 +131,8 @@ const StyledNewSubText = styled.h1`
 
     font-family: 'Permanent Marker', cursive;
     font-weight: normal;
+
+    animation: ${popInAnimation} 0.5s ease-out forwards, ${glideRightAnimation} 10s ease-in 0.5s forwards;
 `;
 
 const StyledNewSubDetailsContainer = styled.div`
@@ -92,6 +143,8 @@ const StyledNewSubDetailsContainer = styled.div`
     padding: 1% 5%;
 
     background: rgba(0, 0, 0, 0.5);
+
+    animation: ${popInAnimation} 0.5s ease-out forwards, ${glideRightAnimation} 10s ease-in 0.5s forwards;
 `;
 
 const StyledNewSubName = styled.h1`
@@ -126,6 +179,8 @@ const StyledRalphSilhouette = styled.img`
     height: auto;
     object-fit: fill;
     transform: translateY(50%);
+
+    animation: ${popInAnimation} 0.5s ease-out forwards, ${glideLeftAnimation} 10s ease-in 0.5s forwards;
 `;
 
 const StyledRalphSilhouetteWhiteLight = styled.div`
@@ -136,6 +191,8 @@ const StyledRalphSilhouetteWhiteLight = styled.div`
     right: 0%;
     padding: 20%;
     background: radial-gradient(circle at center, white, transparent 70%);
+
+    animation: ${popInAnimation} 0.5s ease-out forwards;
 `;
 
 const TwitchSubscriber = observer(() => {
@@ -228,28 +285,30 @@ const TwitchSubscriber = observer(() => {
             onAnimationEnd={onAnimationEnd}
             $fadeOut={fadeOut}
         >
-            <StyledBackgroundContainer>
-                <StyledBackgroundImage src={backgroundImage} />
-            </StyledBackgroundContainer>
-            <StyledNewSubText>A new sub has appeared!</StyledNewSubText>
+            <StyledShakeContainer>
+                <StyledBackgroundContainer>
+                    <StyledBackgroundImage src={backgroundImage} />
+                </StyledBackgroundContainer>
+                <StyledNewSubText>A new sub has appeared!</StyledNewSubText>
 
-            <StyledNewSubDetailsContainer>
-                <StyledNewSubName>
-                    {mainLine}
-                </StyledNewSubName>
+                <StyledNewSubDetailsContainer>
+                    <StyledNewSubName>
+                        {mainLine}
+                    </StyledNewSubName>
 
-                <StyleNewSubDetailsTextDetail>
-                    {subLine}
-                </StyleNewSubDetailsTextDetail>
+                    <StyleNewSubDetailsTextDetail>
+                        {subLine}
+                    </StyleNewSubDetailsTextDetail>
 
-                <StyleNewSubMessage>
-                    {message}
-                </StyleNewSubMessage>
-            </StyledNewSubDetailsContainer>
+                    <StyleNewSubMessage>
+                        {message}
+                    </StyleNewSubMessage>
+                </StyledNewSubDetailsContainer>
 
 
-            <StyledRalphSilhouetteWhiteLight />
-            <StyledRalphSilhouette src={ralphSilhouetteImage} />
+                <StyledRalphSilhouetteWhiteLight />
+                <StyledRalphSilhouette src={ralphSilhouetteImage} />
+            </StyledShakeContainer>
         </SubscribeContainer>
     );
 });
