@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useContext } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { observer } from 'mobx-react';
-import { TwitchAlertsContext } from '../alerts-store';
+import React, {useEffect, useState, useContext} from 'react';
+import styled, {keyframes, ifProp, css} from 'styled-components';
+import {observer} from 'mobx-react';
+import {TwitchAlertsContext} from '../alerts-store';
 
-import { getVoiceAndSay } from '../../../utilities/voice';
-import soundEffect from '../../../sounds/smash-bros/smash-bros-ultimate-super-smash-bros-ultimate-a-new-foe-has-appeared-sound-effect.mp3';
+import {getVoiceAndSay} from '../../../utilities/voice';
+import soundEffectMp3 from '../../../sounds/smash-bros/smash-bros-ultimate-super-smash-bros-ultimate-a-new-foe-has-appeared-sound-effect.mp3';
 import backgroundImage from '../../../images/abstract-background/minified.jpg';
 import ralphSilhouetteImage from '../../../images/ralph/silhouette.png';
 
-const fadeIn = keyframes`
+const fadeInAnimation = keyframes`
     from {
         opacity: 0;
     }
@@ -17,13 +17,17 @@ const fadeIn = keyframes`
     }
 `;
 
-const fadeOut = keyframes`
+const fadeOutAnimation = keyframes`
     from {
         opacity: 1;
     }
     to {
         opacity: 0;
     }
+`;
+
+const theAnimation = (props) => css`
+    ${props.$fadeOut ? fadeOutAnimation : fadeInAnimation} 0.5s ease-in-out;
 `;
 
 const SubscribeContainer = styled.div`
@@ -32,7 +36,7 @@ const SubscribeContainer = styled.div`
     top: 0; left: 0; right: 0; bottom: 0;
     background: black;
 
-    animation: ${fadeIn} 0.5s ease-in-out, ${fadeOut} 0.5s ease-in-out 6s;
+    animation: ${theAnimation};
 `;
 
 const StyledBackgroundContainer = styled.div`
@@ -106,6 +110,13 @@ const StyleNewSubDetailsTextDetail = styled.h1`
     text-transform: uppercase;
 `;
 
+const StyleNewSubMessage = styled.h2`
+    font-size: 1.8rem;
+    font-family: 'Roboto Slab', serif;
+    font-weight: normal;
+    font-style: italic;
+`;
+
 const StyledRalphSilhouette = styled.img`
     position: absolute;
     bottom: 50%;
@@ -130,25 +141,78 @@ const TwitchSubscriber = observer(() => {
     const twitchAlertsContext = useContext(TwitchAlertsContext);
     const subscriberData = twitchAlertsContext.subscriber?.data;
 
+    const [fadeOut, setFadeOut] = useState(false);
     const [animationEnded, setAnimationEnded] = useState(false);
-    const audioEffect = new Audio(soundEffect);
+
+    // Function to create a promise that resolves when the audio ends
+    function playAudioPromise(audioSrc) {
+        return new Promise((resolve, reject) => {
+            const audio = new Audio(audioSrc);
+
+            audio.onended = () => resolve('Audio has ended');
+            audio.onerror = () => reject('Error playing audio');
+            audio.play();
+        });
+    }
+
+    // Function to create a promise that resolves after a timeout
+    function timeoutPromise(duration) {
+        return new Promise(resolve => setTimeout(() => resolve('Timeout reached'), duration));
+    }
+
+    let mainLine = '';
+    let subLine = '';
+    let message = subscriberData?.message?.message ? subscriberData?.message.message : '';
+
+    if (subscriberData) {
+        if (subscriberData.isGift) {
+            mainLine = subscriberData.isAnonymous ? 'Anonymous' : subscriberData.gifterDisplayName;
+            if (subscriberData.duration > 1) {
+            // Specific sub gifted
+                subLine = `${subscriberData.userDisplayName} received a ${subscriberData.duration}-month gift subscription`;
+            } else {
+                // General sub gifts
+                subLine = `Gifted ${subscriberData.duration} subscription${subscriberData.duration > 1 ? 's' : ''}`;
+            }
+        } else {
+            mainLine = `${subscriberData.userDisplayName} just subbed`;
+
+            if (subscriberData.isResub) {
+                subLine = `For ${subscriberData.cumulativeMonths} months!${subscriberData.streakMonths ? ' Streak of ' + subscriberData.streakMonths + ' months!' : ''}`;
+            } else {
+                subLine = 'Welcome & Thank you!';
+            }
+        }
+    }
 
     const onAnimationStart = (e) => {
-        if (e.animationName === fadeIn.name) {
-            audioEffect.play();
+        if (e.animationName === fadeInAnimation.name) {
+            Promise.all([
+                playAudioPromise(soundEffectMp3),
+                timeoutPromise(10000),
+                getVoiceAndSay(`${mainLine}, ${subLine}, ${message ? `they said: ${message}` : ''}`),
+            ]).then(() => {
+                console.log('set fadeout true');
+                setFadeOut(true);
+            });
         }
     };
 
     const onAnimationEnd = (e) => {
-        if (e.animationName === fadeOut.name) {
+        if (e.animationName === fadeOutAnimation.name) {
             setAnimationEnded(true);
         }
     };
 
     useEffect(() => {
         if (animationEnded) {
-            setAnimationEnded(false);
+            console.log('hit sub callback');
             twitchAlertsContext.subscriber.callback();
+
+            setTimeout(() => {
+                setFadeOut(false); // reset fadeOut state
+                setAnimationEnded(false); // reset animationEnded state
+            });
         }
     }, [animationEnded]);
 
@@ -156,24 +220,13 @@ const TwitchSubscriber = observer(() => {
         return null;
     }
 
-    let mainLine = '';
-    let subLine = '';
-
-    if (subscriberData.isGift) {
-        if (subscriberData.isAnonymous) {
-            mainLine = `Anonymous gifted a sub`;
-        } else {
-
-        }
-        mainLine = `${subscriberData.gifterDisplayName} gifted a sub`;
-        subLine = `Tier ${subscriberData.subPlan} sub`;
-    } else {
-        mainLine = subscriberData.userDisplayName;
-        subLine = subscriberData.cumulativeMonths >= 1 ? `Welcome!` : `For ${subscriberData.cumulativeMonths} Months!`;
-    }
-
     return (
-        <SubscribeContainer key={`${twitchAlertsContext.subscriber.data.userId}-${twitchAlertsContext.subscriber.data.time.toISOString()}`} onAnimationStart={onAnimationStart} onAnimationEnd={onAnimationEnd}>
+        <SubscribeContainer
+            key={`${twitchAlertsContext.subscriber.data.userId}-${twitchAlertsContext.subscriber.data.time.toISOString()}`}
+            onAnimationStart={onAnimationStart}
+            onAnimationEnd={onAnimationEnd}
+            $fadeOut={fadeOut}
+        >
             <StyledBackgroundContainer>
                 <StyledBackgroundImage src={backgroundImage} />
             </StyledBackgroundContainer>
@@ -187,7 +240,12 @@ const TwitchSubscriber = observer(() => {
                 <StyleNewSubDetailsTextDetail>
                     {subLine}
                 </StyleNewSubDetailsTextDetail>
+
+                <StyleNewSubMessage>
+                    {message}
+                </StyleNewSubMessage>
             </StyledNewSubDetailsContainer>
+
 
             <StyledRalphSilhouetteWhiteLight />
             <StyledRalphSilhouette src={ralphSilhouetteImage} />

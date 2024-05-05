@@ -29,9 +29,12 @@ export class TwitchAlertsStoreClass {
     processNextEvent() {
         if (this._queue.length > 0) {
             this._processing = true;
-            const event = this._queue.shift();
 
-            this.handleEvent(event);
+            setTimeout(() => {
+                const event = this._queue.shift();
+
+                this.handleEvent(event);
+            });
         }
     }
 

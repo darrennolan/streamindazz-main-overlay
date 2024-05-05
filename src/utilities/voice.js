@@ -1,4 +1,4 @@
-import config from '../config';
+// import config from '../config';
 
 let voiceReady = false;
 
@@ -90,7 +90,15 @@ export async function ibmSay(message) {
 
     const audio = new Audio(objectURL);
 
-    return audio.play();
+    return new Promise((resolve, reject) => {
+        audio.onended = function() {
+            resolve();
+        };
+        audio.onerror = function(err) {
+            reject(err);
+        };
+        audio.play();
+    });
 }
 
 export async function getVoiceAndSay(message, options) {
