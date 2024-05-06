@@ -35,10 +35,10 @@ const popInAnimation = keyframes`
 
 const glideRightAnimation = keyframes`
     0% {
-        transform: translateX(0);
+        transform: translateX(0) perspective(500px) rotateY(8deg);
     }
     100% {
-        transform: translateX(8%);
+        transform: translateX(8%) perspective(500px) rotateY(8deg);
     }
 `;
 
@@ -141,6 +141,7 @@ const StyledNewSubDetailsContainer = styled.div`
     left: 0%;
     width: 100%;
     padding: 1% 5%;
+    margin: 0 200px;
 
     background: rgba(0, 0, 0, 0.5);
 
@@ -148,7 +149,7 @@ const StyledNewSubDetailsContainer = styled.div`
 `;
 
 const StyledNewSubName = styled.h1`
-    font-size: 6rem;
+    font-size: 4rem;
     font-weight: bold;
     text-align: left;
     color: white;
@@ -158,17 +159,18 @@ const StyledNewSubName = styled.h1`
 `;
 
 const StyleNewSubDetailsTextDetail = styled.h1`
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-family: 'Roboto Slab', serif;
     font-weight: normal;
     text-transform: uppercase;
 `;
 
 const StyleNewSubMessage = styled.h2`
-    font-size: 1.8rem;
+    font-size: 1.2rem;
     font-family: 'Roboto Slab', serif;
     font-weight: normal;
     font-style: italic;
+    max-width: 50%;
 `;
 
 const StyledRalphSilhouette = styled.img`
