@@ -5,7 +5,7 @@ import numeral from 'numeral';
 
 import { TwitchAlertsContext } from '../alerts-store';
 
-import { getVoiceAndSay } from '../../../utilities/voice';
+import { getReadyToSay } from '../../../utilities/voice';
 import terminatorImage from '../../../images/terminator/terminator.png';
 import terminatorSound from '../../../sounds/terminator/the-terminator-2.mp3';
 
@@ -120,6 +120,7 @@ const TwitchRaid = observer(() => {
     const terminatorsRef = useRef(null);
     const [animationStarted, setAnimationStarted] = useState(false);
     const [terminatorsWidth, setTerminatorsWidth] = useState(0);
+    const [voiceReadyObject, setVoiceReadyObject] = useState(false);
 
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const gainNode = audioContext.createGain();
@@ -142,6 +143,7 @@ const TwitchRaid = observer(() => {
 
                 source.current.stop();
                 setAnimationStarted(false);
+                setVoiceReadyObject(false);
                 twitchAlertsContext.raid.callback();
             },
             (fadeOutTime - audioContext.currentTime) * 1000,
@@ -166,8 +168,7 @@ const TwitchRaid = observer(() => {
                 source.current.start();
             });
 
-        // read out raider name + party size
-        getVoiceAndSay(`Incoming raid by ${twitchAlertsContext.raid.data.displayName}, with an army of ${twitchAlertsContext.raid.data.viewers}!`);
+        voiceReadyObject.say();
     };
 
     const onAnimationEnd = () => {
@@ -180,7 +181,17 @@ const TwitchRaid = observer(() => {
         }
     }, [terminatorsRef.current, twitchAlertsContext?.raid?.data?.viewers]);
 
-    if (!twitchAlertsContext.raid) {
+    useEffect(() => {
+        if (twitchAlertsContext.raid) {
+            // read out raider name + party size
+            getReadyToSay(`Incoming raid by ${twitchAlertsContext.raid.data.displayName}, with an army of ${twitchAlertsContext.raid.data.viewers}!`)
+                .then((sayObject) => {
+                    setVoiceReadyObject(sayObject);
+                });
+        }
+    }, [twitchAlertsContext.raid]);
+
+    if (!twitchAlertsContext.raid || !voiceReadyObject) {
         return null;
     }
 

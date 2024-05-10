@@ -3,7 +3,7 @@ import styled, {keyframes, css} from 'styled-components';
 import {observer} from 'mobx-react';
 import {TwitchAlertsContext} from '../alerts-store';
 
-import {getVoiceAndSay} from '../../../utilities/voice';
+import {getReadyToSay} from '../../../utilities/voice';
 import soundEffectMp3 from '../../../sounds/smash-bros/smash-bros-ultimate-super-smash-bros-ultimate-a-new-foe-has-appeared-sound-effect.mp3';
 import backgroundImage from '../../../images/abstract-background/minified.jpg';
 import ralphSilhouetteImage from '../../../images/ralph/silhouette.png';
@@ -203,6 +203,7 @@ const TwitchSubscriber = observer(() => {
 
     const [fadeOut, setFadeOut] = useState(false);
     const [animationEnded, setAnimationEnded] = useState(false);
+    const [voiceReadyObject, setVoiceReadyObject] = useState(false);
 
     // Function to create a promise that resolves when the audio ends
     function playAudioPromise(audioSrc) {
@@ -235,7 +236,7 @@ const TwitchSubscriber = observer(() => {
                 subLine = `Gifted ${subscriberData.duration} subscription${subscriberData.duration > 1 ? 's' : ''}`;
             }
         } else {
-            mainLine = `${subscriberData.userDisplayName} just subbed`;
+            mainLine = `${subscriberData.userDisplayName} just subscribed`;
 
             if (subscriberData.isResub) {
                 subLine = `For ${subscriberData.cumulativeMonths} months!${subscriberData.streakMonths ? ' Streak of ' + subscriberData.streakMonths + ' months!' : ''}`;
@@ -250,9 +251,8 @@ const TwitchSubscriber = observer(() => {
             Promise.all([
                 playAudioPromise(soundEffectMp3),
                 timeoutPromise(10000),
-                getVoiceAndSay(`${mainLine}, ${subLine}, ${message ? `they said: ${message}` : ''}`),
+                voiceReadyObject.say(),
             ]).then(() => {
-                console.log('set fadeout true');
                 setFadeOut(true);
             });
         }
@@ -266,7 +266,6 @@ const TwitchSubscriber = observer(() => {
 
     useEffect(() => {
         if (animationEnded) {
-            console.log('hit sub callback');
             twitchAlertsContext.subscriber.callback();
 
             setTimeout(() => {
@@ -276,7 +275,16 @@ const TwitchSubscriber = observer(() => {
         }
     }, [animationEnded]);
 
-    if (!twitchAlertsContext.subscriber) {
+    useEffect(() => {
+        if (message) {
+            getReadyToSay(`${mainLine}, ${subLine}, ${message ? `they said: ${message}` : ''}`)
+                .then((sayObject) => {
+                    setVoiceReadyObject(sayObject);
+                });
+        }
+    }, [message]);
+
+    if (!twitchAlertsContext.subscriber || !voiceReadyObject) {
         return null;
     }
 

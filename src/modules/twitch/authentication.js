@@ -138,6 +138,8 @@ class TwitchAuthentication extends OAuthAuthentication {
 
             return true;
         } else {
+            this.logout();
+
             return false;
         }
     }

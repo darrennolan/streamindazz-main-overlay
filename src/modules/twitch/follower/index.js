@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { observer } from 'mobx-react';
 import { TwitchAlertsContext } from '../alerts-store';
-import { getVoiceAndSay } from '../../../utilities/voice';
+import { getVoiceAndSay, getReadyToSay } from '../../../utilities/voice';
 
 import soundWhoosh from '../../../sounds/whoosh/whoosh.mp3';
 import soundPunch from '../../../sounds/punch/heavy-face-punch.mp3';
@@ -104,6 +104,8 @@ const TextUsername = styled.span`
 const TwitchFollower = observer(() => {
     const twitchAlertsContext = useContext(TwitchAlertsContext);
     const [animationEnded, setAnimationEnded] = useState(false);
+    const [voiceReadyObject, setVoiceReadyObject] = useState(false);
+
     const audioWhoosh = new Audio(soundWhoosh);
     const audioPunch = new Audio(soundPunch);
     // const audioCartoonHorn = new Audio(soundCartoonHorn);
@@ -119,7 +121,8 @@ const TwitchFollower = observer(() => {
         if (e.animationName === slideInLeft.name) {
             audioPunch.play();
             // audioCartoonHorn.play();
-            getVoiceAndSay(`${twitchAlertsContext.follower.data.displayName} just followed!`);
+            // getVoiceAndSay(`${twitchAlertsContext.follower.data.displayName} just followed!`);
+            voiceReadyObject.say();
         }
 
         if (e.animationName === slideOutRight.name) {
@@ -130,11 +133,21 @@ const TwitchFollower = observer(() => {
     useEffect(() => {
         if (animationEnded) {
             setAnimationEnded(false);
+            setVoiceReadyObject(false);
             twitchAlertsContext.follower.callback();
         }
     }, [animationEnded]);
 
-    if (!twitchAlertsContext.follower) {
+    useEffect(() => {
+        if (twitchAlertsContext.follower) {
+            getReadyToSay(`${twitchAlertsContext.follower.data.displayName} just followed!`)
+                .then((sayObject) => {
+                    setVoiceReadyObject(sayObject);
+                });
+        }
+    }, [twitchAlertsContext.follower]);
+
+    if (!twitchAlertsContext.follower || !voiceReadyObject) {
         return null;
     }
 
