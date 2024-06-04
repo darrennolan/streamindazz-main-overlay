@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { observer } from 'mobx-react';
 import { TwitchAlertsContext } from '../alerts-store';
-import { getVoiceAndSay, getReadyToSay } from '../../../utilities/voice';
+import { getReadyToSay } from '../../../utilities/voice';
 
 import soundWhoosh from '../../../sounds/whoosh/whoosh.mp3';
 import soundPunch from '../../../sounds/punch/heavy-face-punch.mp3';

@@ -204,6 +204,7 @@ const TwitchSubscriber = observer(() => {
     const [fadeOut, setFadeOut] = useState(false);
     const [animationEnded, setAnimationEnded] = useState(false);
     const [voiceReadyObject, setVoiceReadyObject] = useState(false);
+    const [messageToSayObject, setMessageToSayObject] = useState({});
 
     // Function to create a promise that resolves when the audio ends
     function playAudioPromise(audioSrc) {
@@ -221,30 +222,43 @@ const TwitchSubscriber = observer(() => {
         return new Promise(resolve => setTimeout(() => resolve('Timeout reached'), duration));
     }
 
-    let mainLine = '';
-    let subLine = '';
-    let message = subscriberData?.message?.message ? subscriberData?.message.message : '';
+    useEffect(() => {
+        let mainLine = '';
+        let subLine = '';
+        let message = subscriberData?.message?.message ? subscriberData?.message.message : '';
 
-    if (subscriberData) {
-        if (subscriberData.isGift) {
-            mainLine = subscriberData.isAnonymous ? 'Anonymous' : subscriberData.gifterDisplayName;
-            if (subscriberData.duration > 1) {
-            // Specific sub gifted
-                subLine = `${subscriberData.userDisplayName} received a ${subscriberData.duration}-month gift subscription`;
+        if (subscriberData) {
+            if (subscriberData.isGift) {
+                mainLine = subscriberData.isAnonymous ? 'Anonymous' : subscriberData.gifterDisplayName;
+                if (subscriberData.duration > 1) {
+                // Specific sub gifted
+                    subLine = `${subscriberData.userDisplayName} received a ${subscriberData.duration}-month gift subscription`;
+                } else {
+                    // General sub gifts
+                    subLine = `Gifted ${subscriberData.duration} subscription${subscriberData.duration > 1 ? 's' : ''}`;
+                }
             } else {
-                // General sub gifts
-                subLine = `Gifted ${subscriberData.duration} subscription${subscriberData.duration > 1 ? 's' : ''}`;
+                mainLine = `${subscriberData.userDisplayName} just subscribed`;
+
+                if (subscriberData.isResub) {
+                    subLine = `For ${subscriberData.cumulativeMonths} months!${subscriberData.streakMonths ? ' Streak of ' + subscriberData.streakMonths + '!' : ''}`;
+                } else {
+                    subLine = 'Welcome & Thank you!';
+                }
             }
-        } else {
-            mainLine = `${subscriberData.userDisplayName} just subscribed`;
 
-            if (subscriberData.isResub) {
-                subLine = `For ${subscriberData.cumulativeMonths} months!${subscriberData.streakMonths ? ' Streak of ' + subscriberData.streakMonths + ' months!' : ''}`;
-            } else {
-                subLine = 'Welcome & Thank you!';
+            if (mainLine || subLine || message) {
+                setMessageToSayObject(
+                    // `${mainLine}, ${subLine}, ${message ? `they said: ${message}` : ''}`);
+                    {
+                        mainLine,
+                        subLine,
+                        message,
+                    },
+                );
             }
         }
-    }
+    }, [subscriberData]);
 
     const onAnimationStart = (e) => {
         if (e.animationName === fadeInAnimation.name) {
@@ -276,13 +290,13 @@ const TwitchSubscriber = observer(() => {
     }, [animationEnded]);
 
     useEffect(() => {
-        if (message) {
-            getReadyToSay(`${mainLine}, ${subLine}, ${message ? `they said: ${message}` : ''}`)
+        if (messageToSayObject.mainLine) {
+            getReadyToSay()
                 .then((sayObject) => {
                     setVoiceReadyObject(sayObject);
                 });
         }
-    }, [message]);
+    }, [messageToSayObject]);
 
     if (!twitchAlertsContext.subscriber || !voiceReadyObject) {
         return null;
@@ -303,18 +317,17 @@ const TwitchSubscriber = observer(() => {
 
                 <StyledNewSubDetailsContainer>
                     <StyledNewSubName>
-                        {mainLine}
+                        {messageToSayObject.mainLine}
                     </StyledNewSubName>
 
                     <StyleNewSubDetailsTextDetail>
-                        {subLine}
+                        {messageToSayObject.subLine}
                     </StyleNewSubDetailsTextDetail>
 
                     <StyleNewSubMessage>
-                        {message}
+                        {messageToSayObject.message}
                     </StyleNewSubMessage>
                 </StyledNewSubDetailsContainer>
-
 
                 <StyledRalphSilhouetteWhiteLight />
                 <StyledRalphSilhouette src={ralphSilhouetteImage} />

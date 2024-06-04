@@ -2,8 +2,12 @@ import React from 'react';
 import { runInAction, makeObservable, observable } from 'mobx';
 
 export class TwitchAlertsStoreClass {
+    timeoutToClearInMs = 35 * 1000;
+
     _queue = [];
     _processing = false;
+
+    _escapeTimeout = null;
 
     follower = null;
     raid = null;
@@ -42,9 +46,19 @@ export class TwitchAlertsStoreClass {
         switch (event.type) {
             case 'new-follower':
                 runInAction(() => {
+                    this._escapeTimeout = setTimeout(() => {
+                        this.follower = null;
+                        this._processing = false;
+                        this.processNextEvent();
+
+                        this._escapeTimeout = null;
+                    }, this.timeoutToClearInMs);
+
                     this.follower = {
                         data: event.data,
                         callback: () => {
+                            clearTimeout(this._escapeTimeout);
+
                             this.follower = null;
                             this._processing = false;
                             this.processNextEvent();
@@ -55,9 +69,19 @@ export class TwitchAlertsStoreClass {
 
             case 'raid':
                 runInAction(() => {
+                    this._escapeTimeout = setTimeout(() => {
+                        this.raid = null;
+                        this._processing = false;
+                        this.processNextEvent();
+
+                        this._escapeTimeout = null;
+                    }, this.timeoutToClearInMs);
+
                     this.raid = {
                         data: event.data,
                         callback: () => {
+                            clearTimeout(this._escapeTimeout);
+
                             this.raid = null;
                             this._processing = false;
                             this.processNextEvent();
@@ -70,9 +94,19 @@ export class TwitchAlertsStoreClass {
                 console.log('Subscriber event:', event);
 
                 runInAction(() => {
+                    this._escapeTimeout = setTimeout(() => {
+                        this.subscriber = null;
+                        this._processing = false;
+                        this.processNextEvent();
+
+                        this._escapeTimeout = null;
+                    }, this.timeoutToClearInMs);
+
                     this.subscriber = {
                         data: event.data,
                         callback: () => {
+                            clearTimeout(this._escapeTimeout);
+
                             this.subscriber = null;
                             this._processing = false;
                             this.processNextEvent();
