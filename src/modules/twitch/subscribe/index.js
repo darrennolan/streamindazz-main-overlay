@@ -230,26 +230,29 @@ const TwitchSubscriber = observer(() => {
         if (subscriberData) {
             if (subscriberData.isGift) {
                 mainLine = subscriberData.isAnonymous ? 'Anonymous' : subscriberData.gifterDisplayName;
-                if (subscriberData.duration > 1) {
+                mainLine += ' gifted ';
+
+                if (subscriberData.userDisplayName) {
                 // Specific sub gifted
-                    subLine = `${subscriberData.userDisplayName} received a ${subscriberData.duration}-month gift subscription`;
+                    subLine = `${subscriberData.userDisplayName} a ${subscriberData.duration}-month subscription`;
                 } else {
                     // General sub gifts
-                    subLine = `Gifted ${subscriberData.duration} subscription${subscriberData.duration > 1 ? 's' : ''}`;
+                    subLine = `${subscriberData.duration} channel sub${subscriberData.duration > 1 ? 's' : ''}`;
                 }
             } else {
                 mainLine = `${subscriberData.userDisplayName} just subscribed`;
 
                 if (subscriberData.isResub) {
-                    subLine = `For ${subscriberData.cumulativeMonths} months!${subscriberData.streakMonths ? ' Streak of ' + subscriberData.streakMonths + '!' : ''}`;
+                    subLine = `for ${subscriberData.cumulativeMonths} months${subscriberData.streakMonths ? ' streak of ' + subscriberData.streakMonths + '!' : ''}`;
                 } else {
                     subLine = 'Welcome & Thank you!';
                 }
             }
 
+            console.log('effect', `${mainLine} ${subLine}, ${message ? `they said: ${message}` : ''}`);
+
             if (mainLine || subLine || message) {
                 setMessageToSayObject(
-                    // `${mainLine}, ${subLine}, ${message ? `they said: ${message}` : ''}`);
                     {
                         mainLine,
                         subLine,
@@ -285,13 +288,14 @@ const TwitchSubscriber = observer(() => {
             setTimeout(() => {
                 setFadeOut(false); // reset fadeOut state
                 setAnimationEnded(false); // reset animationEnded state
+                setVoiceReadyObject(false); // reset voiceReadyObject state
             });
         }
     }, [animationEnded]);
 
     useEffect(() => {
         if (messageToSayObject.mainLine) {
-            getReadyToSay()
+            getReadyToSay(`${messageToSayObject.mainLine}, ${messageToSayObject.subLine}, ${messageToSayObject.message ? `they said: ${messageToSayObject.message}` : ''}`)
                 .then((sayObject) => {
                     setVoiceReadyObject(sayObject);
                 });
