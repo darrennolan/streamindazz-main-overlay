@@ -32,10 +32,11 @@ function complete(commands) {
 }
 
 const commands = [
-    'follower',
-    'subscriber',
-    'subscriber-gift',
-    'subscriber-anonymous-gift',
+    'follow',
+    'follow2',
+    'sub',
+    'gift',
+    'anonymous-gift',
     'cheer',
     'raid',
 ];
@@ -48,7 +49,7 @@ const action = prompt(
 );
 
 switch (action) {
-    case 'follower':
+    case 'follow':
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelFollow', {
             id: '123456',
             updatedAt: new Date().toISOString(),
@@ -56,7 +57,16 @@ switch (action) {
         });
         break;
 
-    case 'subscriber':
+    case 'follow2':
+        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelFollow', {
+            id: '654321',
+            updatedAt: new Date().toISOString(),
+            userDisplayName: 'CosyCalico',
+        });
+        break;
+
+
+    case 'sub':
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
             cumulativeMonths: 9,
             duration: 2,
@@ -77,7 +87,7 @@ switch (action) {
         });
         break;
 
-    case 'subscriber-gift':
+    case 'gift':
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
             cumulativeMonths: 1,
             duration: 1,
@@ -98,7 +108,7 @@ switch (action) {
         });
         break;
 
-    case 'subscriber-anonymous-gift':
+    case 'anonymous-gift':
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
             cumulativeMonths: 1,
             duration: 1,

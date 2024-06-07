@@ -249,8 +249,6 @@ const TwitchSubscriber = observer(() => {
                 }
             }
 
-            console.log('effect', `${mainLine} ${subLine}, ${message ? `they said: ${message}` : ''}`);
-
             if (mainLine || subLine || message) {
                 setMessageToSayObject(
                     {
