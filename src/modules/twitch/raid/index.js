@@ -168,7 +168,9 @@ const TwitchRaid = observer(() => {
                 source.current.start();
             });
 
-        voiceReadyObject.say();
+
+        new Promise(resolve => setTimeout(resolve, 2000))
+            .then(() => voiceReadyObject.say());
     };
 
     const onAnimationEnd = () => {

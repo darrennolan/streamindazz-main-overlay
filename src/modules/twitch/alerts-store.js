@@ -2,7 +2,7 @@ import React from 'react';
 import { runInAction, makeObservable, observable } from 'mobx';
 
 export class TwitchAlertsStoreClass {
-    timeoutToClearInMs = 35 * 1000;
+    timeoutToClearInMs = 45 * 1000;
 
     _queue = [];
     _processing = false;

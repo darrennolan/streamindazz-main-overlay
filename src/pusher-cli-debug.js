@@ -40,6 +40,7 @@ const commands = [
     'cheer',
     'raid',
     'raid2',
+    'raid3',
 ];
 
 const action = prompt(
@@ -151,6 +152,16 @@ switch (action) {
             viewers: 112,
         });
         break;
+
+    case 'raid3':
+        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelRaidTo', {
+            id: '12345678',
+            updatedAt: new Date().toISOString(),
+            raidingBroadcasterDisplayName: 'Miss_Laney_Ous',
+            viewers: 35000,
+        });
+        break;
+
     default:
         console.error('Invalid action');
         break;
