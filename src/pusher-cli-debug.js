@@ -39,6 +39,7 @@ const commands = [
     'anonymous-gift',
     'cheer',
     'raid',
+    'raid2',
 ];
 
 const action = prompt(
@@ -139,6 +140,15 @@ switch (action) {
             updatedAt: new Date().toISOString(),
             raidingBroadcasterDisplayName: 'StreamingDazz',
             viewers: 52,
+        });
+        break;
+
+    case 'raid2':
+        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelRaidTo', {
+            id: '1234567',
+            updatedAt: new Date().toISOString(),
+            raidingBroadcasterDisplayName: 'CosyCalico',
+            viewers: 112,
         });
         break;
     default:

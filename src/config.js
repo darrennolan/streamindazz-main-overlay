@@ -36,6 +36,8 @@ const config = {
         iamServiceid_crn: process.env.IBM_IAM_SERVICEID_CRN,
         url: process.env.IBM_URL,
     },
+
+    // newRelicSnippet: process.env.NEW_RELIC_SNIPPET_BASE64_ENCODED && atob(process.env.NEW_RELIC_SNIPPET_BASE64_ENCODED),
 };
 
 export default config;
