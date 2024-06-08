@@ -108,6 +108,10 @@ const TwitchFollower = observer(() => {
 
     const audioWhoosh = new Audio(soundWhoosh);
     const audioPunch = new Audio(soundPunch);
+
+    audioWhoosh.volume = 1;
+    audioPunch.volume = 1;
+
     // const audioCartoonHorn = new Audio(soundCartoonHorn);
 
     const onAnimationStart = (e) => {
@@ -121,8 +125,8 @@ const TwitchFollower = observer(() => {
         if (e.animationName === slideInLeft.name) {
             audioPunch.play();
             // audioCartoonHorn.play();
-            // getVoiceAndSay(`${twitchAlertsContext.follower.data.displayName} just followed!`);
-            voiceReadyObject.say();
+            new Promise(resolve => setTimeout(resolve, 500))
+                .then(() => voiceReadyObject.say());
         }
 
         if (e.animationName === slideOutRight.name) {

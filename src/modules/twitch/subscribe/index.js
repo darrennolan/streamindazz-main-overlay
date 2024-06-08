@@ -266,7 +266,8 @@ const TwitchSubscriber = observer(() => {
             Promise.all([
                 playAudioPromise(soundEffectMp3),
                 timeoutPromise(10000),
-                voiceReadyObject.say(),
+                new Promise(resolve => setTimeout(resolve, 2000))
+                    .then(() => voiceReadyObject.say()),
             ]).then(() => {
                 setFadeOut(true);
             });
@@ -293,7 +294,7 @@ const TwitchSubscriber = observer(() => {
 
     useEffect(() => {
         if (messageToSayObject.mainLine) {
-            getReadyToSay(`${messageToSayObject.mainLine}, ${messageToSayObject.subLine}, ${messageToSayObject.message ? `they said: ${messageToSayObject.message}` : ''}`)
+            getReadyToSay(`${messageToSayObject.mainLine} ${messageToSayObject.subLine} ${messageToSayObject.message ? `they said: ${messageToSayObject.message}` : ''}`)
                 .then((sayObject) => {
                     setVoiceReadyObject(sayObject);
                 });

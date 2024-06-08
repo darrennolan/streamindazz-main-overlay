@@ -113,7 +113,7 @@ export async function getVoiceAndSay(message, options) {
 }
 
 export async function getReadyToSay(message, options) {
-    if (window.obsstudio) {
+    if (window.obsstudio || true) {
         // If OBS - use watson to say this.
         return getIbmReadyToSay(message);
     } else {
@@ -140,6 +140,8 @@ export async function getIbmReadyToSay(message) {
     const objectURL = URL.createObjectURL(blob);
 
     const audio = new Audio(objectURL);
+
+    audio.volume = 0.6;
 
     return {say: ()=> {
         audio.play();

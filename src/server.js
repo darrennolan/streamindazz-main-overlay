@@ -32,7 +32,9 @@ function handleTTSRequest(req, res) {
     const synthesizeParams = {
         text: whatToSay,
         accept: 'audio/mp3',
-        voice: 'en-AU_JackExpressive',
+        // voice: 'en-AU_JackExpressive',
+        // voice: 'en-GB_JamesV3Voice',
+        voice: 'en-GB_KateV3Voice',
     };
 
     textToSpeech
