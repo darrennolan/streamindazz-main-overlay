@@ -78,7 +78,7 @@ switch (action) {
             isAnonymous: false,
             isGift: false,
             isResub: true,
-            message: {message:'yay more ad free watching!'},
+            message: {message:'stream965Heart yay more ad free watching!'},
             months: 9,
             streakMonths: 2,
             subPlan: 'Tier 1 fancy sub name',

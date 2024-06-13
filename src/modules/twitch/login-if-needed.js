@@ -4,8 +4,6 @@ import styled from 'styled-components';
 import getTwitchAuthentication from './authentication';
 
 import getWebSocketServices from './websocket-services';
-// import WebSocketService from './websocket-service';
-// import PubSubService from './pubsub-service';
 
 const LoginButton = styled.button`
   background-color: #6441A4; /* twitch purple */
