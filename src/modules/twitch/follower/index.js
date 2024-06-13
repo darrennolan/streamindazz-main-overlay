@@ -109,8 +109,8 @@ const TwitchFollower = observer(() => {
     const audioWhoosh = new Audio(soundWhoosh);
     const audioPunch = new Audio(soundPunch);
 
-    audioWhoosh.volume = 1;
-    audioPunch.volume = 1;
+    audioWhoosh.volume = 0.9;
+    audioPunch.volume = 0.9;
 
     // const audioCartoonHorn = new Audio(soundCartoonHorn);
 

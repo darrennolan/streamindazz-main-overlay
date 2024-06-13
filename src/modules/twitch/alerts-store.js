@@ -13,6 +13,9 @@ export class TwitchAlertsStoreClass {
     raid = null;
     subscriber = null;
 
+    followedToday = [];
+    followedTodayWhitelist = ['StreamingDazz', 'CosyCalico']; // These are two test names that are allowed to be followed multiple times in a day.
+
     constructor() {
         makeObservable(this, {
             follower: observable,
@@ -45,26 +48,39 @@ export class TwitchAlertsStoreClass {
     handleEvent(event) {
         switch (event.type) {
             case 'new-follower':
-                runInAction(() => {
-                    this._escapeTimeout = setTimeout(() => {
-                        this.follower = null;
+                // If we've already seen this user follow us today, don't let them follow again. This is to prevent spam.
+                if (this.followedToday.includes(event.data.displayName) && !this.followedTodayWhitelist.includes(event.data.displayName)) {
+                    console.warn('Ignore followed today:', event.data.displayName);
+
+                    runInAction(() => {
                         this._processing = false;
                         this.processNextEvent();
+                    });
+                } else {
+                    runInAction(() => {
+                        this.followedToday.push(event.data.displayName);
 
-                        this._escapeTimeout = null;
-                    }, this.timeoutToClearInMs);
-
-                    this.follower = {
-                        data: event.data,
-                        callback: () => {
-                            clearTimeout(this._escapeTimeout);
-
+                        this._escapeTimeout = setTimeout(() => {
                             this.follower = null;
                             this._processing = false;
                             this.processNextEvent();
-                        },
-                    };
-                });
+
+                            this._escapeTimeout = null;
+                        }, this.timeoutToClearInMs);
+
+                        this.follower = {
+                            data: event.data,
+                            callback: () => {
+                                clearTimeout(this._escapeTimeout);
+
+                                this.follower = null;
+                                this._processing = false;
+                                this.processNextEvent();
+                            },
+                        };
+                    });
+                }
+
                 break;
 
             case 'raid':

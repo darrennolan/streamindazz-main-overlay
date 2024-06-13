@@ -116,6 +116,8 @@ const TextUsername = styled.span`
 
 
 const TwitchRaid = observer(() => {
+    const raidSoundStartPercent = 0.8;
+
     const twitchAlertsContext = useContext(TwitchAlertsContext);
     const terminatorsRef = useRef(null);
     const [animationStarted, setAnimationStarted] = useState(false);
@@ -130,7 +132,7 @@ const TwitchRaid = observer(() => {
     function fadeOut() {
         let fadeOutTime = audioContext.currentTime + 3; // 3 seconds from now
 
-        gainNode.gain.setValueAtTime(1, audioContext.currentTime); // Current volume
+        gainNode.gain.setValueAtTime(raidSoundStartPercent, audioContext.currentTime); // Current volume
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + fadeOutTime); // Fade to near 0
 
         // @TODO Fade out not working as expected. Just ends.
@@ -165,6 +167,7 @@ const TwitchRaid = observer(() => {
                 source.current.buffer = audioBuffer;
                 source.current.connect(gainNode);
                 gainNode.connect(audioContext.destination);
+                gainNode.gain.value = raidSoundStartPercent; // volume
                 source.current.start();
             });
 
@@ -186,7 +189,7 @@ const TwitchRaid = observer(() => {
     useEffect(() => {
         if (twitchAlertsContext.raid) {
             // read out raider name + party size
-            getReadyToSay(`Incoming raid by ${twitchAlertsContext.raid.data.displayName}, with an army of ${twitchAlertsContext.raid.data.viewers}!`)
+            getReadyToSay(`Incoming raid from ${twitchAlertsContext.raid.data.displayName}, with an army of ${twitchAlertsContext.raid.data.viewers}!`)
                 .then((sayObject) => {
                     setVoiceReadyObject(sayObject);
                 });
