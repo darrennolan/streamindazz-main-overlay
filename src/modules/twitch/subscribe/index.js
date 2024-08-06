@@ -149,7 +149,7 @@ const StyledNewSubDetailsContainer = styled.div`
 `;
 
 const StyledNewSubName = styled.h1`
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: bold;
     text-align: left;
     color: white;
@@ -159,14 +159,14 @@ const StyledNewSubName = styled.h1`
 `;
 
 const StyleNewSubDetailsTextDetail = styled.h1`
-    font-size: 2.2rem;
+    font-size: 1.5rem;
     font-family: 'Roboto Slab', serif;
     font-weight: normal;
     text-transform: uppercase;
 `;
 
 const StyleNewSubMessage = styled.h2`
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-family: 'Roboto Slab', serif;
     font-weight: normal;
     font-style: italic;
