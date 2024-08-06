@@ -223,38 +223,74 @@ const TwitchSubscriber = observer(() => {
     }
 
     useEffect(() => {
-        let mainLine = '';
-        let subLine = '';
+        let mainLine1 = '';
+        let mainLine2 = '';
+        let mainLineRead = '';
+
+        let subLine1 = '';
+        let subLine2 = '';
+        let subLineRead = '';
+
+        let tierMessage = '';
         let message = subscriberData?.message?.message ? subscriberData?.message.message : '';
 
         if (subscriberData) {
             if (subscriberData.isGift) {
-                mainLine = subscriberData.isAnonymous ? 'Anonymous' : subscriberData.gifterDisplayName;
-                mainLine += ' gifted ';
+                switch (subscriberData.tier) {
+                    case 1000:
+                    case '1000':
+                        tierMessage = '';
+                        break;
 
-                if (subscriberData.userDisplayName) {
-                // Specific sub gifted
-                    subLine = `${subscriberData.userDisplayName} a ${subscriberData.duration}-month subscription`;
+                    case 2000:
+                    case '2000':
+                        tierMessage = 'Tier 2 ';
+                        break;
+
+                    case 3000:
+                    case '3000':
+                        tierMessage = 'Tier 3 ';
+                        break;
+                }
+
+                mainLine1 = subscriberData.isAnonymous ? 'Anonymous' : subscriberData.gifterDisplayName;
+                mainLine1 += ` just gifted ${(subscriberData.amount > 1 ? subscriberData.amount : '')}`;
+                mainLine2 += ` ${tierMessage}${(subscriberData.amount > 1 ? ' subs' : ' a sub')} to the channel!`;
+
+
+                if (subscriberData.cumulativeAmount && subscriberData.cumulativeAmount > 1) {
+                    // They've done this before!
+                    subLine1 = `They've gifted an amazing ${subscriberData.cumulativeAmount} subs to the channel!`;
+                    subLine2 = `Thank you so much!`;
                 } else {
-                    // General sub gifts
-                    subLine = `${subscriberData.duration} channel sub${subscriberData.duration > 1 ? 's' : ''}`;
+                    // First time! Or Anonymous!
+                    subLine2 = `Thank you so much!`;
                 }
             } else {
-                mainLine = `${subscriberData.userDisplayName} just subscribed`;
+                mainLine1 = `${subscriberData.userDisplayName} just subscribed`;
 
                 if (subscriberData.isResub) {
-                    subLine = `for ${subscriberData.cumulativeMonths} months${subscriberData.streakMonths ? ' streak of ' + subscriberData.streakMonths + '!' : ''}`;
+                    subLine1 = `for ${subscriberData.cumulativeMonths} months${subscriberData.streakMonths ? ' streak of ' + subscriberData.streakMonths + '!' : ''}`;
                 } else {
-                    subLine = 'Welcome & Thank you!';
+                    subLine1 = 'Welcome & Thank you!';
                 }
             }
 
-            if (mainLine || subLine || message) {
+            mainLineRead = (`${mainLine1} ${mainLine2}`).trim();
+            subLineRead = (`${subLine1} ${subLine2}`).trim();
+
+            if (mainLineRead || subLineRead || message) {
                 setMessageToSayObject(
                     {
-                        mainLine,
-                        subLine,
-                        message,
+                        mainLine: mainLineRead,
+                        subLine: subLineRead,
+                        message: message,
+
+                        displayMainLine1: mainLine1,
+                        displayMainLine2: mainLine2,
+                        displaySubLine1: subLine1,
+                        displaySubLine2: subLine2,
+                        displayMessage: message,
                     },
                 );
             }
@@ -320,15 +356,17 @@ const TwitchSubscriber = observer(() => {
 
                 <StyledNewSubDetailsContainer>
                     <StyledNewSubName>
-                        {messageToSayObject.mainLine}
+                        {messageToSayObject.displayMainLine1}
+                        {messageToSayObject.displayMainLine2 ? <><br />{messageToSayObject.displayMainLine2}</> : null}
                     </StyledNewSubName>
 
                     <StyleNewSubDetailsTextDetail>
-                        {messageToSayObject.subLine}
+                        {messageToSayObject.displaySubLine1}
+                        {messageToSayObject.displaySubLine2 ? <><br />{messageToSayObject.displaySubLine2}</> : null}
                     </StyleNewSubDetailsTextDetail>
 
                     <StyleNewSubMessage>
-                        {messageToSayObject.message}
+                        {messageToSayObject.displayMessage}
                     </StyleNewSubMessage>
                 </StyledNewSubDetailsContainer>
 

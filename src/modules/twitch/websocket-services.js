@@ -125,55 +125,101 @@ export class WebSocketServices {
         });
 
         // Subscriptions
-        this._pubSubClient.onSubscription(this._userId, (event) => {
-            console.log('PubSub onSubscription', event);
+        this._eventSubClient.onChannelSubscriptionGift(this._userId, (event) => {
+            console.log('EventSub onChannelSubscriptionGift', event);
             twitchAlertsStore.addEvent({
                 type: 'subscriber',
                 data: {
-                    cumulativeMonths: event.cumulativeMonths,
-                    duration: event.duration,
-                    gifterDisplayName: event.gifterDisplayName,
+                    isGift: true,
+                    isAnonymous: event.isAnonymous,
+                    time: new Date(), // just base the event as 'now'.  EventSub doesn't seem to have a time but we use it for uniqueness in react.
+                    userId: event.gifterId,
                     gifterId: event.gifterId,
                     gifterName: event.gifterName,
-                    isAnonymous: event.isAnonymous,
-                    isGift: event.isGift,
-                    isResub: event.isResub,
-                    message: event.message,
-                    // months: event.months,
-                    streakMonths: event.streakMonths,
-                    subPlan: event.subPlan,
-                    time: event.time,
-                    userDisplayName: event.userDisplayName,
-                    userId: event.userId,
-                    userName: event.userName,
+                    gifterDisplayName: event.gifterDisplayName,
+
+                    tier: event.tier,
+                    amount: event.amount,
+                    cumulativeAmount: event.cumulativeAmount,
                 },
             });
         });
-        this._pusherChannel.bind('onChannelSubscription', (event) => {
-            console.log('Pusher onChannelSubscription', event);
+        this._pusherChannel.bind('onChannelSubscriptionGift', (event) => {
+            console.log('Pusher onChannelSubscriptionGift', event);
             twitchAlertsStore.addEvent({
                 type: 'subscriber',
                 data: {
-                    cumulativeMonths: event.cumulativeMonths,
-                    duration: event.duration,
-                    gifterDisplayName: event.gifterDisplayName,
+                    isGift: true,
+                    isAnonymous: event.isAnonymous,
+                    time: new Date(), // just base the event as 'now'.  EventSub doesn't seem to have a time but we use it for uniqueness in react.
+                    userId: event.gifterId,
                     gifterId: event.gifterId,
                     gifterName: event.gifterName,
-                    isAnonymous: event.isAnonymous,
-                    isGift: event.isGift,
-                    isResub: event.isResub,
-                    message: event.message,
-                    // months: event.months,
-                    streakMonths: event.streakMonths,
-                    subPlan: event.subPlan,
-                    time: new Date(event.time),
-                    userDisplayName: event.userDisplayName,
-                    userId: event.userId,
-                    userName: event.userName,
+                    gifterDisplayName: event.gifterDisplayName,
+
+                    tier: event.tier,
+                    amount: event.amount,
+                    cumulativeAmount: event.cumulativeAmount,
                 },
             });
         });
 
+        this._pubSubClient.onSubscription(this._userId, (event) => {
+            if (event.isGift) {
+                console.log('GIFT IGNORED PubSub onSubscription', event);
+            } else {
+                console.log('PubSub onSubscription', event);
+                twitchAlertsStore.addEvent({
+                    type: 'subscriber',
+                    data: {
+                        cumulativeMonths: event.cumulativeMonths,
+                        duration: event.duration,
+                        gifterDisplayName: event.gifterDisplayName,
+                        gifterId: event.gifterId,
+                        gifterName: event.gifterName,
+                        isAnonymous: event.isAnonymous,
+                        isGift: event.isGift,
+                        isResub: event.isResub,
+                        message: event.message,
+                        // months: event.months,
+                        streakMonths: event.streakMonths,
+                        subPlan: event.subPlan,
+                        time: event.time,
+                        userDisplayName: event.userDisplayName,
+                        userId: event.userId,
+                        userName: event.userName,
+                    },
+                });
+            }
+        });
+        this._pusherChannel.bind('onChannelSubscription', (event) => {
+            if (event.isGift) {
+                console.log('GIFT IGNORED PubSub onSubscription', event);
+            } else {
+                console.log('Pusher onChannelSubscription', event);
+                twitchAlertsStore.addEvent({
+                    type: 'subscriber',
+                    data: {
+                        cumulativeMonths: event.cumulativeMonths,
+                        duration: event.duration,
+                        gifterDisplayName: event.gifterDisplayName,
+                        gifterId: event.gifterId,
+                        gifterName: event.gifterName,
+                        isAnonymous: event.isAnonymous,
+                        isGift: event.isGift,
+                        isResub: event.isResub,
+                        message: event.message,
+                        // months: event.months,
+                        streakMonths: event.streakMonths,
+                        subPlan: event.subPlan,
+                        time: new Date(event.time),
+                        userDisplayName: event.userDisplayName,
+                        userId: event.userId,
+                        userName: event.userName,
+                    },
+                });
+            }
+        });
     }
 }
 

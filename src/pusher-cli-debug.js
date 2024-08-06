@@ -90,6 +90,7 @@ switch (action) {
         break;
 
     case 'gift':
+        // this pusher should be ignored, but is here for testing purposes
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
             cumulativeMonths: 1,
             duration: 1,
@@ -108,9 +109,23 @@ switch (action) {
             userId: 12345,
             userName: 'cosycalico',
         });
+
+        // This is the new eventsub implementation
+        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscriptionGift', {
+            isGift: true,
+            isAnonymous: false,
+            gifterId: 5678,
+            gifterName: 'streamindazz',
+            gifterDisplayName: 'StreamingDazz',
+
+            tier: 2000,
+            amount: 5,
+            cumulativeAmount: 12,
+        });
         break;
 
     case 'anonymous-gift':
+        // this pusher should be ignored, but is here for testing purposes
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
             cumulativeMonths: 1,
             duration: 1,
@@ -128,6 +143,19 @@ switch (action) {
             userDisplayName: 'CosyCalico',
             userId: 12345,
             userName: 'cosycalico',
+        });
+
+        // This is the new eventsub implementation
+        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscriptionGift', {
+            isGift: true,
+            isAnonymous: true,
+            gifterId: 12345,
+            gifterName: 'cosycalico',
+            gifterDisplayName: 'CosyCalico',
+
+            tier: 1000,
+            amount: 5,
+            cumulativeAmount: null,
         });
         break;
 
