@@ -41,6 +41,8 @@ const commands = [
     'raid',
     'raid2',
     'raid3',
+    'cheer',
+    'cheer100',
 ];
 
 const action = prompt(
@@ -55,7 +57,7 @@ switch (action) {
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelFollow', {
             id: '123456',
             updatedAt: new Date().toISOString(),
-            userDisplayName: 'StreamingDazz',
+            userDisplayName: 'StreaminDazz',
         });
         break;
 
@@ -83,9 +85,9 @@ switch (action) {
             streakMonths: 2,
             subPlan: 'Tier 1 fancy sub name',
             time: new Date().toISOString(),
-            userDisplayName: 'StreamingDazz',
+            userDisplayName: 'StreaminDazz',
             userId: 12345,
-            userName: 'streamingdazz',
+            userName: 'streamindazz',
         });
         break;
 
@@ -94,9 +96,9 @@ switch (action) {
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
             cumulativeMonths: 1,
             duration: 1,
-            gifterDisplayName: 'StreamingDazz',
+            gifterDisplayName: 'StreaminDazz',
             gifterId: 5678,
-            gifterName: 'streamingdazz',
+            gifterName: 'streamindazz',
             isAnonymous: false,
             isGift: true,
             isResub: false,
@@ -116,7 +118,7 @@ switch (action) {
             isAnonymous: false,
             gifterId: 5678,
             gifterName: 'streamindazz',
-            gifterDisplayName: 'StreamingDazz',
+            gifterDisplayName: 'StreaminDazz',
 
             tier: 2000,
             amount: 5,
@@ -129,9 +131,9 @@ switch (action) {
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
             cumulativeMonths: 1,
             duration: 1,
-            gifterDisplayName: 'StreamingDazz',
+            gifterDisplayName: 'StreaminDazz',
             gifterId: 5678,
-            gifterName: 'streamingdazz',
+            gifterName: 'streamindazz',
             isAnonymous: true,
             isGift: true,
             isResub: false,
@@ -159,15 +161,11 @@ switch (action) {
         });
         break;
 
-    case 'cheer':
-
-        break;
-
     case 'raid':
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelRaidTo', {
             id: '123456',
             updatedAt: new Date().toISOString(),
-            raidingBroadcasterDisplayName: 'StreamingDazz',
+            raidingBroadcasterDisplayName: 'StreaminDazz',
             viewers: 52,
         });
         break;
@@ -187,6 +185,26 @@ switch (action) {
             updatedAt: new Date().toISOString(),
             raidingBroadcasterDisplayName: 'Miss_Laney_Ous',
             viewers: 35000,
+        });
+        break;
+
+    case 'cheer':
+        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelCheer', {
+            id: '123456',
+            updatedAt: new Date().toISOString(),
+            userDisplayName: 'StreaminDazz',
+            bits: 1,
+            message: 'ralph is the best!',
+        });
+        break;
+
+    case 'cheer100':
+        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelCheer', {
+            id: '123456',
+            updatedAt: new Date().toISOString(),
+            userDisplayName: 'StreaminDazz',
+            bits: 100,
+            message: 'ralph is the bestest!',
         });
         break;
 

@@ -185,9 +185,9 @@ export class WebSocketServices {
                         streakMonths: event.streakMonths,
                         subPlan: event.subPlan,
                         time: event.time,
-                        userDisplayName: event.userDisplayName,
                         userId: event.userId,
                         userName: event.userName,
+                        userDisplayName: event.userDisplayName,
                     },
                 });
             }
@@ -213,13 +213,55 @@ export class WebSocketServices {
                         streakMonths: event.streakMonths,
                         subPlan: event.subPlan,
                         time: new Date(event.time),
-                        userDisplayName: event.userDisplayName,
                         userId: event.userId,
                         userName: event.userName,
+                        userDisplayName: event.userDisplayName,
                     },
                 });
             }
         });
+
+        // Cheers
+        this._eventSubClient.onChannelCheer(this._userId, (event) => {
+            console.log('EventSub onChannelCheer', event);
+            twitchAlertsStore.addEvent({
+                type: 'cheer',
+                data: {
+                    userId: event.userId,
+                    userName: event.userName,
+                    userDisplayName: event.userDisplayName,
+                    bits: event.bits,
+                    message: event.message,
+                },
+            });
+        });
+        this._pusherChannel.bind('onChannelCheer', (event) => {
+            console.log('Pusher onChannelCheer', event);
+            twitchAlertsStore.addEvent({
+                type: 'cheer',
+                data: {
+                    userId: event.userId,
+                    userName: event.userName,
+                    userDisplayName: event.userDisplayName,
+                    bits: event.bits,
+                    message: event.message,
+                },
+            });
+        });
+
+        window.test = () => {
+            console.log('Window Test onChannelCheer', event);
+            twitchAlertsStore.addEvent({
+                type: 'cheer',
+                data: {
+                    userId: 12345,
+                    userName: 'streamindazz',
+                    userDisplayName: 'streaminDazz',
+                    bits: 1,
+                    message: 'yo man sup',
+                },
+            });
+        };
     }
 }
 

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "concurrently --kill-others \"npm run srv-start\" \"npm run js-start\"",
-    "srv-start": "node --env-file=.env src/server.js",
+    "srv-start": "node --env-file=.env --watch src/server.js",
     "js-start": "parcel src/index.html",
     "js-build": "parcel build src/index.html",
     "push": "node --env-file=.env src/pusher-cli-debug.js",
@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-polly": "^3.629.0",
     "@twurple/api": "^7.1.0",
     "@twurple/eventsub-ws": "^7.1.0",
     "@twurple/pubsub": "^7.1.0",

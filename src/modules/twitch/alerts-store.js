@@ -12,6 +12,7 @@ export class TwitchAlertsStoreClass {
     follower = null;
     raid = null;
     subscriber = null;
+    cheer = null;
 
     followedToday = [];
     followedTodayWhitelist = ['StreamingDazz', 'CosyCalico']; // These are two test names that are allowed to be followed multiple times in a day.
@@ -21,6 +22,7 @@ export class TwitchAlertsStoreClass {
             follower: observable,
             raid: observable,
             subscriber: observable,
+            cheer: observable,
         });
     }
 
@@ -124,6 +126,31 @@ export class TwitchAlertsStoreClass {
                             clearTimeout(this._escapeTimeout);
 
                             this.subscriber = null;
+                            this._processing = false;
+                            this.processNextEvent();
+                        },
+                    };
+                });
+                break;
+
+            case 'cheer':
+                console.log('Cheer event:', event);
+
+                runInAction(() => {
+                    this._escapeTimeout = setTimeout(() => {
+                        this.cheer = null;
+                        this._processing = false;
+                        this.processNextEvent();
+
+                        this._escapeTimeout = null;
+                    }, this.timeoutToClearInMs);
+
+                    this.cheer = {
+                        data: event.data,
+                        callback: () => {
+                            clearTimeout(this._escapeTimeout);
+
+                            this.cheer = null;
                             this._processing = false;
                             this.processNextEvent();
                         },
