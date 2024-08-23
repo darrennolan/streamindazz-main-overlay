@@ -23,14 +23,16 @@ export async function getNativeVoiceReady() {
 }
 
 export async function getReadyToSay(message, options) {
+    const cleanedUpMessage = cleanUpMessage(message);
+
     if (window.obsstudio) {
         // If OBS - use watson to say this.
-        return getIbmReadyToSay(message);
+        return getIbmReadyToSay(cleanedUpMessage);
     } else {
         // Otherwise, use the native browser to say it.
         await getNativeVoiceReady();
 
-        return getNativeVoiceReadyToSay(message, options);
+        return getNativeVoiceReadyToSay(cleanedUpMessage, options);
     }
 }
 
@@ -118,4 +120,20 @@ export async function getNativeVoiceReadyToSay(
             };
         });
     }};
+}
+
+function cleanUpMessage(message = '') {
+    if (!message) {
+        return '';
+    }
+
+    let returnMessage = message.replace(/<[^>]*>/g, ''); // Remove any HTML tags
+
+    returnMessage = returnMessage.replace(/&nbsp;/g, ' '); // Replace &nbsp; with a space
+    returnMessage = returnMessage.replace(/&amp;/g, '&'); // Replace &amp; with an ampersand
+
+    // replace underscores with a space
+    returnMessage = returnMessage.replace(/_/g, ' ');
+
+    return returnMessage;
 }

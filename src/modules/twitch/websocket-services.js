@@ -3,9 +3,9 @@ import {PubSubClient} from '@twurple/pubsub';
 import {ApiClient} from '@twurple/api';
 import {EventSubWsListener} from '@twurple/eventsub-ws';
 
-
 import getAuthenticationSingleton from './authentication';
 import {twitchAlertsStore} from './alerts-store';
+// import {ChatClient} from '@twurple/chat';
 
 let webSocketServicesSingleton = null;
 
@@ -73,6 +73,13 @@ export class WebSocketServices {
             useTLS: true,
         });
         this._pusherChannel = this._pusherClient.subscribe(`streamer-${this._userId}`);
+
+        // this._chatClient = new ChatClient({
+        //     authProvider: twurpleAuthProvider,
+        //     channels: [this._login],
+        //     rejoinChannelsOnReconnect: true,
+        // });
+        // this._chatClient.connect();
 
         // Follower
         this._eventSubClient.onChannelFollow(this._userId, this._userId, (event) => {
@@ -222,46 +229,81 @@ export class WebSocketServices {
         });
 
         // Cheers
-        this._eventSubClient.onChannelCheer(this._userId, (event) => {
-            console.log('EventSub onChannelCheer', event);
-            twitchAlertsStore.addEvent({
-                type: 'cheer',
-                data: {
-                    userId: event.userId,
-                    userName: event.userName,
-                    userDisplayName: event.userDisplayName,
-                    bits: event.bits,
-                    message: event.message,
-                },
-            });
-        });
-        this._pusherChannel.bind('onChannelCheer', (event) => {
-            console.log('Pusher onChannelCheer', event);
-            twitchAlertsStore.addEvent({
-                type: 'cheer',
-                data: {
-                    userId: event.userId,
-                    userName: event.userName,
-                    userDisplayName: event.userDisplayName,
-                    bits: event.bits,
-                    message: event.message,
-                },
-            });
-        });
+        // this._chatClient.onMessage((channel, user, text, messageObject) => {
+        //     console.log('ChatClient onMessage', channel, user, text, messageObject);
+        // });
 
-        window.test = () => {
-            console.log('Window Test onChannelCheer', event);
-            twitchAlertsStore.addEvent({
-                type: 'cheer',
-                data: {
-                    userId: 12345,
-                    userName: 'streamindazz',
-                    userDisplayName: 'streaminDazz',
-                    bits: 1,
-                    message: 'yo man sup',
-                },
-            });
-        };
+
+        // this._eventSubClient.onChannelCheer(this._userId, (event) => {
+        //     console.log('EventSub onChannelCheer', event);
+        //     twitchAlertsStore.addEvent({
+        //         type: 'cheer',
+        //         data: {
+        //             userId: event.userId,
+        //             userName: event.userName,
+        //             userDisplayName: event.userDisplayName,
+        //             bits: event.bits,
+        //             message: event.message,
+        //         },
+        //     });
+        // });
+        // this._pusherChannel.bind('onChannelCheer', (event) => {
+        //     console.log('Pusher onChannelCheer', event);
+        //     twitchAlertsStore.addEvent({
+        //         type: 'cheer',
+        //         data: {
+        //             userId: event.userId,
+        //             userName: event.userName,
+        //             userDisplayName: event.userDisplayName,
+        //             bits: event.bits,
+        //             message: event.message,
+        //         },
+        //     });
+        // });
+
+        // window.test1 = () => {
+        //     console.log('Window Test onChannelCheer', event);
+        //     twitchAlertsStore.addEvent({
+        //         type: 'cheer',
+        //         data: {
+        //             userId: 12345,
+        //             userName: 'streamindazz',
+        //             userDisplayName: 'streaminDazz',
+        //             bits: 1,
+        //             message: 'Cheer10 popping in so second sleep stream965Hi',
+        //             parsedMessage: parseChatMessage('Cheer10 popping in so second sleep stream965Hi'),
+        //         },
+        //     });
+
+        //     console.log(parseChatMessage('Cheer10 popping in so second sleep stream965Hi'));
+        //     debugger;
+        // };
+        // window.test2 = () => {
+        //     console.log('Window Test onChannelCheer', event);
+        //     twitchAlertsStore.addEvent({
+        //         type: 'cheer',
+        //         data: {
+        //             userId: 12345,
+        //             userName: 'streamindazz',
+        //             userDisplayName: 'streaminDazz',
+        //             bits: 1,
+        //             message: 'yo man sup',
+        //         },
+        //     });
+        // };
+        // window.test3 = () => {
+        //     console.log('Window Test onChannelCheer', event);
+        //     twitchAlertsStore.addEvent({
+        //         type: 'cheer',
+        //         data: {
+        //             userId: 12345,
+        //             userName: 'streamindazz',
+        //             userDisplayName: 'streaminDazz',
+        //             bits: 105,
+        //             message: 'yo man sup',
+        //         },
+        //     });
+        // };
     }
 }
 

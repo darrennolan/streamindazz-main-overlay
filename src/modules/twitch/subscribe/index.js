@@ -258,13 +258,14 @@ const TwitchSubscriber = observer(() => {
                 mainLine2 += ` ${tierMessage}${(subscriberData.amount > 1 ? ' subs' : ' a sub')} to the channel!`;
 
 
-                if (subscriberData.cumulativeAmount && subscriberData.cumulativeAmount > 1) {
+                if (subscriberData.cumulativeAmount && subscriberData.cumulativeAmount > 1 && (subscriberData.amount !== subscriberData.cumulativeAmount)) {
                     // They've done this before!
+                    // Note: When giving 5 first time, amount will === cumulativeAmount, so don't say "amazing" in that case
                     subLine1 = `They've gifted an amazing ${subscriberData.cumulativeAmount} subs to the channel!`;
-                    subLine2 = `Thank you so much!`;
+                    subLine2 = `Cheers!`;
                 } else {
                     // First time! Or Anonymous!
-                    subLine2 = `Thank you so much!`;
+                    subLine2 = `Cheers!`;
                 }
             } else {
                 mainLine1 = `${subscriberData.userDisplayName} just subscribed`;

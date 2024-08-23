@@ -7,6 +7,10 @@ class TwitchAuthentication extends OAuthAuthentication {
     constructor(config) {
         const scopes = [
             'moderator:read:followers',
+
+            // 'chat:read',
+            // 'chat:edit',
+
             'channel:read:subscriptions',
             'bits:read',
         ];
