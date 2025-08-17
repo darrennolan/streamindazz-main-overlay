@@ -71,47 +71,22 @@ switch (action) {
 
 
     case 'sub':
-        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
-            cumulativeMonths: 9,
-            duration: 2,
-            gifterDisplayName: null,
-            gifterId: null,
-            gifterName: null,
-            isAnonymous: false,
+        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscriptionMessage', {
             isGift: false,
-            isResub: true,
-            message: {message:'stream965Heart yay more ad free watching!'},
-            months: 9,
+
+            cumulativeMonths: 9,
             streakMonths: 2,
-            subPlan: 'Tier 1 fancy sub name',
-            time: new Date().toISOString(),
-            userDisplayName: 'StreaminDazz',
+
+            messageText: 'stream965Heart yay more ad free watching!',
+
+            tier: 1000,
             userId: 12345,
             userName: 'streamindazz',
+            userDisplayName: 'StreaminDazz',
         });
         break;
 
     case 'gift':
-        // this pusher should be ignored, but is here for testing purposes
-        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
-            cumulativeMonths: 1,
-            duration: 1,
-            gifterDisplayName: 'StreaminDazz',
-            gifterId: 5678,
-            gifterName: 'streamindazz',
-            isAnonymous: false,
-            isGift: true,
-            isResub: false,
-            message: null,
-            months: 1,
-            streakMonths: 1,
-            subPlan: 'Tier 1 fancy sub name',
-            time: new Date().toISOString(),
-            userDisplayName: 'CosyCalico',
-            userId: 12345,
-            userName: 'cosycalico',
-        });
-
         // This is the new eventsub implementation
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscriptionGift', {
             isGift: true,
@@ -127,26 +102,6 @@ switch (action) {
         break;
 
     case 'anonymous-gift':
-        // this pusher should be ignored, but is here for testing purposes
-        pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscription', {
-            cumulativeMonths: 1,
-            duration: 1,
-            gifterDisplayName: 'StreaminDazz',
-            gifterId: 5678,
-            gifterName: 'streamindazz',
-            isAnonymous: true,
-            isGift: true,
-            isResub: false,
-            message: null,
-            months: 1,
-            streakMonths: 1,
-            subPlan: 'Tier 1 fancy sub name',
-            time: new Date().toISOString(),
-            userDisplayName: 'CosyCalico',
-            userId: 12345,
-            userName: 'cosycalico',
-        });
-
         // This is the new eventsub implementation
         pusher.trigger(`streamer-${config.pusher.twitchUserId}`, 'onChannelSubscriptionGift', {
             isGift: true,

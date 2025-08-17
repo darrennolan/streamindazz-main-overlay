@@ -1,5 +1,5 @@
 import Pusher from 'pusher-js';
-import {PubSubClient} from '@twurple/pubsub';
+// import {PubSubClient} from '@twurple/pubsub';
 import {ApiClient} from '@twurple/api';
 import {EventSubWsListener} from '@twurple/eventsub-ws';
 
@@ -18,7 +18,7 @@ export class WebSocketServices {
     // twurple stuffz
     _apiClient = null;
     _eventSubClient = null;
-    _pubSubClient = null;
+    // _pubSubClient = null;
 
     // debugger stuff from pusher.com
     _pusherClient = null;
@@ -66,7 +66,7 @@ export class WebSocketServices {
         this._eventSubClient = new EventSubWsListener({apiClient: this._apiClient});
         this._eventSubClient.start();
 
-        this._pubSubClient = new PubSubClient({authProvider: twurpleAuthProvider});
+        // this._pubSubClient = new PubSubClient({authProvider: twurpleAuthProvider});
 
         this._pusherClient = this.pusher = new Pusher(this._pusherConfig.key, {
             cluster: this._pusherConfig.cluster,
@@ -171,27 +171,57 @@ export class WebSocketServices {
             });
         });
 
-        this._pubSubClient.onSubscription(this._userId, (event) => {
+        // this._pubSubClient.onSubscription(this._userId, (event) => {
+        //     if (event.isGift) {
+        //         console.log('GIFT IGNORED PubSub onSubscription', event);
+        //     } else {
+        //         console.log('PubSub onSubscription', event);
+        //         twitchAlertsStore.addEvent({
+        //             type: 'subscriber',
+        //             data: {
+        //                 cumulativeMonths: event.cumulativeMonths,
+        //                 duration: event.duration,
+        //                 gifterDisplayName: event.gifterDisplayName,
+        //                 gifterId: event.gifterId,
+        //                 gifterName: event.gifterName,
+        //                 isAnonymous: event.isAnonymous,
+        //                 isGift: event.isGift,
+        //                 isResub: event.isResub,
+        //                 message: event.message,
+        //                 // months: event.months,
+        //                 streakMonths: event.streakMonths,
+        //                 subPlan: event.subPlan,
+        //                 time: event.time,
+        //                 userId: event.userId,
+        //                 userName: event.userName,
+        //                 userDisplayName: event.userDisplayName,
+        //             },
+        //         });
+        //     }
+        // });
+
+        // onChannelSubscription
+        this._eventSubClient.onChannelSubscription(this._userId, (event) => {
+            console.info('NEW EVENT: EventSub onChannelSubscription', event);
+        });
+
+        this._eventSubClient.onChannelSubscriptionMessage(this._userId, (event) => {
+            // Note if it's coming through with message, it won't be a sub anyway. This is for 'onChannelSubscription' we might need to inspect it.
             if (event.isGift) {
-                console.log('GIFT IGNORED PubSub onSubscription', event);
+                console.log('GIFT IGNORED EventSub onChannelSubscriptionMessage', event);
             } else {
-                console.log('PubSub onSubscription', event);
+                console.log('EventSub onChannelSubscriptionMessage', event);
                 twitchAlertsStore.addEvent({
                     type: 'subscriber',
                     data: {
+                        isGift: false,
                         cumulativeMonths: event.cumulativeMonths,
-                        duration: event.duration,
-                        gifterDisplayName: event.gifterDisplayName,
-                        gifterId: event.gifterId,
-                        gifterName: event.gifterName,
-                        isAnonymous: event.isAnonymous,
-                        isGift: event.isGift,
-                        isResub: event.isResub,
-                        message: event.message,
-                        // months: event.months,
                         streakMonths: event.streakMonths,
-                        subPlan: event.subPlan,
-                        time: event.time,
+
+                        message: event.messageText,
+
+                        tier: event.tier,
+                        time: new Date(),
                         userId: event.userId,
                         userName: event.userName,
                         userDisplayName: event.userDisplayName,
@@ -199,27 +229,23 @@ export class WebSocketServices {
                 });
             }
         });
-        this._pusherChannel.bind('onChannelSubscription', (event) => {
+        this._pusherChannel.bind('onChannelSubscriptionMessage', (event) => {
             if (event.isGift) {
-                console.log('GIFT IGNORED PubSub onSubscription', event);
+                console.log('GIFT IGNORED EventSub onChannelSubscriptionMessage', event);
             } else {
-                console.log('Pusher onChannelSubscription', event);
+                console.log('Pusher onChannelSubscriptionMessage', event);
                 twitchAlertsStore.addEvent({
                     type: 'subscriber',
                     data: {
+                        isGift: false,
+
                         cumulativeMonths: event.cumulativeMonths,
-                        duration: event.duration,
-                        gifterDisplayName: event.gifterDisplayName,
-                        gifterId: event.gifterId,
-                        gifterName: event.gifterName,
-                        isAnonymous: event.isAnonymous,
-                        isGift: event.isGift,
-                        isResub: event.isResub,
-                        message: event.message,
-                        // months: event.months,
                         streakMonths: event.streakMonths,
-                        subPlan: event.subPlan,
-                        time: new Date(event.time),
+
+                        message: event.messageText,
+
+                        tier: event.tier,
+                        time: new Date(),
                         userId: event.userId,
                         userName: event.userName,
                         userDisplayName: event.userDisplayName,

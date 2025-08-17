@@ -232,7 +232,7 @@ const TwitchSubscriber = observer(() => {
         let subLineRead = '';
 
         let tierMessage = '';
-        let message = subscriberData?.message?.message ? subscriberData?.message.message : '';
+        let message = subscriberData?.message || '';
 
         if (subscriberData) {
             if (subscriberData.isGift) {
@@ -270,7 +270,7 @@ const TwitchSubscriber = observer(() => {
             } else {
                 mainLine1 = `${subscriberData.userDisplayName} just subscribed`;
 
-                if (subscriberData.isResub) {
+                if (subscriberData.cumulativeMonths && subscriberData.cumulativeMonths > 1) {
                     subLine1 = `for ${subscriberData.cumulativeMonths} months${subscriberData.streakMonths ? ' streak of ' + subscriberData.streakMonths + '!' : ''}`;
                 } else {
                     subLine1 = 'Welcome & Thank you!';
